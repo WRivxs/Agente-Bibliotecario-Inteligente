@@ -1,0 +1,8 @@
+# Archivos a ignorar en Git (no subir a repositorio)
+.env
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
