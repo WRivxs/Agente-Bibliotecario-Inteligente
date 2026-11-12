@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arquitectura 3D por Capas - Agente Bibliotecario Inteligente</title>
-    <!-- Three.js & OrbitControls via CDN -->
+    <title>Arquitectura 3D Realista por Capas - Agente Bibliotecario</title>
+    <!-- Three.js, OrbitControls, TWEEN & Font -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --bg-color: #090D16;
-            --layer-1-color: #3B82F6; /* Streamlit UI - Azul */
-            --layer-2-color: #8B5CF6; /* Gemini Agent - Púrpura */
-            --layer-3-color: #10B981; /* ML / TF-IDF - Esmeralda */
-            --layer-4-color: #F59E0B; /* Dataset - Ámbar */
-            --glass-bg: rgba(15, 23, 42, 0.75);
-            --border-glow: rgba(255, 255, 255, 0.1);
+            --bg-color: #050811;
+            --layer-1-color: #0088FF; /* Streamlit UI - Azul Neón Eléctrico */
+            --layer-2-color: #A855F7; /* Gemini Agent - Púrpura Neón */
+            --layer-3-color: #10B981; /* Motor TF-IDF - Verde Esmeralda */
+            --layer-4-color: #F59E0B; /* Dataset 2.521 Libros - Oro Ámbar */
+            --glass-bg: rgba(10, 16, 32, 0.85);
+            --border-glow: rgba(255, 255, 255, 0.15);
         }
 
         * {
@@ -29,7 +29,7 @@
         }
 
         body {
-            background-color: var(--bg-color);
+            background: radial-gradient(circle at 50% 30%, #0d1527 0%, #050811 100%);
             color: #F8FAFC;
             font-family: 'Plus Jakarta Sans', sans-serif;
             overflow: hidden;
@@ -74,32 +74,32 @@
 
         .brand-title {
             background: var(--glass-bg);
-            backdrop-filter: blur(16px);
+            backdrop-filter: blur(20px);
             border: 1px solid var(--border-glow);
             padding: 18px 24px;
-            border-radius: 16px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            border-radius: 18px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
         }
 
         .brand-badge {
             display: inline-block;
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.2));
-            color: #93C5FD;
+            background: linear-gradient(135deg, rgba(0, 136, 255, 0.25), rgba(168, 85, 247, 0.25));
+            color: #60A5FA;
             font-size: 0.75rem;
-            font-weight: 700;
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.1em;
-            padding: 4px 10px;
-            border-radius: 6px;
+            letter-spacing: 0.12em;
+            padding: 4px 12px;
+            border-radius: 20px;
             margin-bottom: 8px;
-            border: 1px solid rgba(147, 197, 253, 0.3);
+            border: 1px solid rgba(96, 165, 250, 0.4);
         }
 
         h1 {
-            font-size: 1.6rem;
+            font-size: 1.65rem;
             font-weight: 800;
             letter-spacing: -0.02em;
-            background: linear-gradient(135deg, #FFFFFF 0%, #CBD5E1 100%);
+            background: linear-gradient(135deg, #FFFFFF 0%, #94A3B8 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 4px;
@@ -118,7 +118,7 @@
 
         .btn {
             background: var(--glass-bg);
-            backdrop-filter: blur(12px);
+            backdrop-filter: blur(14px);
             border: 1px solid var(--border-glow);
             color: #F8FAFC;
             font-family: 'Plus Jakarta Sans', sans-serif;
@@ -132,39 +132,40 @@
             align-items: center;
             gap: 8px;
             text-decoration: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
 
         .btn:hover {
-            background: rgba(30, 41, 59, 0.9);
-            border-color: rgba(255,255,255,0.3);
+            background: rgba(30, 41, 59, 0.95);
+            border-color: rgba(255,255,255,0.35);
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+            background: linear-gradient(135deg, #0088FF 0%, #0055FF 100%);
             border: none;
-            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+            box-shadow: 0 4px 18px rgba(0, 136, 255, 0.45);
         }
 
         .btn-primary:hover {
-            box-shadow: 0 6px 25px rgba(37, 99, 235, 0.6);
+            box-shadow: 0 6px 28px rgba(0, 136, 255, 0.65);
         }
 
-        /* Panel Lateral de Detalle de Capa */
+        /* Panel Lateral Inspector */
         .layer-inspector {
             position: absolute;
             right: 32px;
-            top: 100px;
-            width: 380px;
+            top: 105px;
+            width: 390px;
             background: var(--glass-bg);
-            backdrop-filter: blur(20px);
+            backdrop-filter: blur(24px);
             border: 1px solid var(--border-glow);
             border-radius: 20px;
             padding: 24px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
             transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-            max-height: calc(100vh - 160px);
+            max-height: calc(100vh - 170px);
             overflow-y: auto;
         }
 
@@ -175,15 +176,15 @@
             padding: 4px 12px;
             border-radius: 20px;
             font-size: 0.75rem;
-            font-weight: 700;
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.06em;
             margin-bottom: 12px;
         }
 
         .inspector-title {
-            font-size: 1.3rem;
-            font-weight: 700;
+            font-size: 1.35rem;
+            font-weight: 800;
             margin-bottom: 8px;
             line-height: 1.25;
         }
@@ -203,18 +204,18 @@
         }
 
         .feature-item {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             padding: 10px 14px;
             border-radius: 10px;
-            font-size: 0.82rem;
+            font-size: 0.83rem;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
         .feature-item span.icon {
-            font-size: 1.1rem;
+            font-size: 1.15rem;
         }
 
         .tech-tags {
@@ -224,13 +225,13 @@
         }
 
         .tech-pill {
-            background: rgba(148, 163, 184, 0.1);
-            color: #CBD5E1;
+            background: rgba(148, 163, 184, 0.12);
+            color: #E2E8F0;
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.72rem;
-            padding: 4px 8px;
+            font-size: 0.74rem;
+            padding: 4px 9px;
             border-radius: 6px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         /* Footer con Selector Rápido de Capas */
@@ -240,11 +241,12 @@
             align-items: center;
             gap: 12px;
             background: var(--glass-bg);
-            backdrop-filter: blur(16px);
+            backdrop-filter: blur(20px);
             border: 1px solid var(--border-glow);
-            padding: 10px 16px;
+            padding: 10px 18px;
             border-radius: 40px;
             align-self: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
         }
 
         .layer-btn {
@@ -253,8 +255,8 @@
             color: #94A3B8;
             padding: 8px 16px;
             border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
+            font-size: 0.82rem;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
@@ -263,48 +265,49 @@
         }
 
         .layer-btn .dot {
-            width: 8px;
-            height: 8px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
+            box-shadow: 0 0 10px currentColor;
         }
 
         .layer-btn:hover {
             color: #FFFFFF;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.08);
         }
 
         .layer-btn.active {
             color: #FFFFFF;
-            background: rgba(255, 255, 255, 0.12);
-            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
         }
 
-        /* Indicador de simulación de flujo */
+        /* Banner de Simulación */
         .simulation-banner {
             position: absolute;
             top: 24px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(16, 185, 129, 0.15);
-            border: 1px solid #10B981;
+            background: rgba(16, 185, 129, 0.2);
+            border: 1.5px solid #10B981;
             color: #6EE7B7;
-            padding: 8px 20px;
+            padding: 9px 24px;
             border-radius: 30px;
-            font-size: 0.85rem;
-            font-weight: 600;
+            font-size: 0.88rem;
+            font-weight: 700;
             display: none;
             align-items: center;
             gap: 10px;
-            box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
-            animation: pulseGlow 1.5s infinite;
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.4);
+            animation: pulseGlow 1.4s infinite;
         }
 
         @keyframes pulseGlow {
-            0%, 100% { opacity: 0.9; }
-            50% { opacity: 0.4; }
+            0%, 100% { opacity: 1; transform: translateX(-50%) scale(1); }
+            50% { opacity: 0.7; transform: translateX(-50%) scale(0.98); }
         }
 
-        /* Instrucciones de interacción 3D */
         .camera-tip {
             position: absolute;
             left: 32px;
@@ -312,22 +315,16 @@
             color: #64748B;
             font-size: 0.78rem;
             font-family: 'JetBrains Mono', monospace;
-            background: rgba(15, 23, 42, 0.6);
+            background: rgba(10, 16, 32, 0.7);
             padding: 8px 14px;
             border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         @media (max-width: 900px) {
-            .layer-inspector {
-                display: none;
-            }
-            .hud-overlay {
-                padding: 16px;
-            }
-            h1 {
-                font-size: 1.2rem;
-            }
+            .layer-inspector { display: none; }
+            .hud-overlay { padding: 16px; }
+            h1 { font-size: 1.25rem; }
         }
     </style>
 </head>
@@ -339,9 +336,9 @@
         <!-- Header -->
         <div class="header">
             <div class="brand-title">
-                <div class="brand-badge">Sistemas Inteligentes • Proyecto de Aula</div>
-                <h1>Arquitectura del Agente Bibliotecario</h1>
-                <div class="brand-subtitle">Prototipo Tridimensional Interactivo de Capas Tecnológicas</div>
+                <div class="brand-badge">Sistemas Inteligentes • Arquitectura de Software</div>
+                <h1>Agente Bibliotecario Inteligente</h1>
+                <div class="brand-subtitle">Visualización Tridimensional de Capas y Flujo de Inferencia</div>
             </div>
 
             <div class="top-actions">
@@ -349,25 +346,25 @@
                     <span id="explode-icon">⤢</span> <span id="explode-text">Separar Capas (3D Explode)</span>
                 </button>
                 <button class="btn btn-primary" onclick="simularFlujo()">
-                    ⚡ Simular Consulta ("Punteros en C")
+                    ⚡ Simular Consulta Real ("Punteros en C")
                 </button>
                 <a href="https://agente-bibliotecario-inteligente-wrivas.streamlit.app/" target="_blank" class="btn">
-                    🌐 Abrir App en Vivo ↗
+                    🌐 Ver App en Producción ↗
                 </a>
             </div>
         </div>
 
         <!-- Banner de flujo -->
         <div class="simulation-banner" id="sim-banner">
-            <span class="pulse-dot">●</span> <span id="sim-text">Flujo de datos activo...</span>
+            <span>●</span> <span id="sim-text">Flujo de datos activo...</span>
         </div>
 
         <!-- Panel Lateral Inspector -->
         <div class="layer-inspector" id="inspector">
-            <div class="inspector-badge" id="insp-badge" style="background: rgba(59, 130, 246, 0.2); color: #93C5FD;">
-                Capa 1 • Frontend
+            <div class="inspector-badge" id="insp-badge" style="background: rgba(0, 136, 255, 0.25); color: #60A5FA;">
+                Capa 1 • Frontend & UX
             </div>
-            <div class="inspector-title" id="insp-title">Interfaz de Usuario y Lector</div>
+            <div class="inspector-title" id="insp-title">Capa 1: Interfaz de Usuario y Lector</div>
             <div class="inspector-desc" id="insp-desc">
                 Interfaz web conversacional construida en Streamlit con diseño abierto estilo ChatGPT/Gemini y panel Canvas de lectura con Google Books integrado.
             </div>
@@ -388,86 +385,90 @@
 
         <!-- Instrucción de cámara -->
         <div class="camera-tip">
-            🖱️ Clic y arrastra para rotar en 3D • Scroll para zoom • Clic en una capa para seleccionarla
+            🖱️ Clic izquierdo y arrastra para rotar • Clic derecho para desplazar • Scroll para zoom
         </div>
 
         <!-- Footer Selector de Capas -->
         <div class="footer-nav">
             <button class="layer-btn active" onclick="seleccionarCapa(0)" id="nav-btn-0">
-                <span class="dot" style="background: var(--layer-1-color);"></span> Capa 1: Interfaz
+                <span class="dot" style="background: var(--layer-1-color); color: var(--layer-1-color);"></span> Capa 1: Interfaz Streamlit
             </button>
             <button class="layer-btn" onclick="seleccionarCapa(1)" id="nav-btn-1">
-                <span class="dot" style="background: var(--layer-2-color);"></span> Capa 2: Agente Gemini
+                <span class="dot" style="background: var(--layer-2-color); color: var(--layer-2-color);"></span> Capa 2: Agente Gemini 3.1
             </button>
             <button class="layer-btn" onclick="seleccionarCapa(2)" id="nav-btn-2">
-                <span class="dot" style="background: var(--layer-3-color);"></span> Capa 3: Motor ML
+                <span class="dot" style="background: var(--layer-3-color); color: var(--layer-3-color);"></span> Capa 3: Motor TF-IDF
             </button>
             <button class="layer-btn" onclick="seleccionarCapa(3)" id="nav-btn-3">
-                <span class="dot" style="background: var(--layer-4-color);"></span> Capa 4: Dataset 2.521
+                <span class="dot" style="background: var(--layer-4-color); color: var(--layer-4-color);"></span> Capa 4: Catálogo (2.521 Libros)
             </button>
         </div>
     </div>
 
     <script>
         // ─────────────────────────────────────────────────────────────────────
-        // DATOS DE LAS 4 CAPAS DEL PROYECTO
+        // DEFINICIÓN DETALLADA DE LAS 4 CAPAS DEL PROYECTO
         // ─────────────────────────────────────────────────────────────────────
         const LAYERS_DATA = [
             {
                 id: 1,
-                name: "Capa 1: Interfaz de Usuario y Lector",
-                badge: "Capa 1 • Presentación y UX",
-                badgeBg: "rgba(59, 130, 246, 0.2)",
-                badgeColor: "#93C5FD",
-                colorHex: 0x3B82F6,
-                desc: "Experiencia de usuario conversacional fluida sin cajas cerradas (estilo ChatGPT y Gemini). Cuenta con panel lateral interactivo Split-Screen / Canvas que incrusta el visor oficial de Google Books.",
+                name: "Capa 1: Interfaz Web y Canvas Lector",
+                badge: "Capa 1 • Presentación y Experiencia de Usuario",
+                badgeBg: "rgba(0, 136, 255, 0.25)",
+                badgeColor: "#60A5FA",
+                colorHex: 0x0088FF,
+                glowHex: 0x38BDF8,
+                desc: "Experiencia conversacional fluida sin marcos cerrados (idéntica a ChatGPT y Gemini). Integra el panel interactivo Split-Screen / Canvas con el lector de páginas oficial de Google Books.",
                 features: [
-                    { icon: "💬", text: "Chat abierto con barra de entrada flotante" },
-                    { icon: "📖", text: "Lector y vista previa de páginas oficial" },
-                    { icon: "🎯", text: "Tarjetas dinámicas con afinidad porcentual" },
-                    { icon: "📱", text: "Responsividad Mobile-First para celulares" }
+                    { icon: "💬", text: "Chat abierto con barra de texto flotante" },
+                    { icon: "📖", text: "Lector oficial de páginas y capítulos incrustado" },
+                    { icon: "🎯", text: "Tarjetas interactivas con score de afinidad TF-IDF" },
+                    { icon: "📱", text: "Diseño responsivo para teléfonos y computadores" }
                 ],
-                techs: ["Python", "Streamlit 1.35+", "Google Books Iframe", "CSS3 Glassmorphism"]
+                techs: ["Python", "Streamlit 1.35+", "Google Books Iframe", "HTML5 & CSS Flexbox"]
             },
             {
                 id: 2,
                 name: "Capa 2: Agente Autónomo Cognitivo",
                 badge: "Capa 2 • Razonamiento y LLM",
-                badgeBg: "rgba(139, 92, 246, 0.2)",
-                badgeColor: "#C4B5FD",
-                colorHex: 0x8B5CF6,
-                desc: "Cerebro conversacional basado en Google Gemini 3.1 Flash Lite. Mantiene memoria del diálogo (Multi-turn), indaga dudas y ejecuta autónomamente Tool Calling para consultar el catálogo matemático.",
+                badgeBg: "rgba(168, 85, 247, 0.25)",
+                badgeColor: "#C084FC",
+                colorHex: 0xA855F7,
+                glowHex: 0xE879F9,
+                desc: "Cerebro conversacional sustentado en Google Gemini 3.1 Flash Lite. Mantiene memoria de contexto (Multi-turn), indaga las debilidades del estudiante y activa de forma autónoma la herramienta 'buscar_libros()'.",
                 features: [
-                    { icon: "🧠", text: "Modelo Gemini 3.1 Flash Lite con System Prompt" },
-                    { icon: "🛠️", text: "Tool Calling nativo hacia la función buscar_libros" },
-                    { icon: "💡", text: "Explicabilidad Pedagógica (Explainable AI / XAI)" },
-                    { icon: "🔄", text: "Re-ranqueo y descarte de libros no pertinentes" }
+                    { icon: "🧠", text: "Modelo Gemini 3.1 con System Prompt pedagógico" },
+                    { icon: "🛠️", text: "Tool Calling nativo (Function Calling determinístico)" },
+                    { icon: "💡", text: "Explicabilidad (XAI): Justifica por qué cada libro sirve" },
+                    { icon: "⚖️", text: "Re-ranqueo: Evalúa los candidatos y descarta descartes" }
                 ],
-                techs: ["google-genai SDK", "Gemini 3.1", "Function Calling", "Multi-turn Chat", "RAG"]
+                techs: ["google-genai SDK", "Gemini 3.1 Flash Lite", "Function Calling", "RAG"]
             },
             {
                 id: 3,
                 name: "Capa 3: Motor Matemático de Machine Learning",
-                badge: "Capa 3 • NLP y Similitud",
-                badgeBg: "rgba(16, 185, 129, 0.2)",
-                badgeColor: "#6EE7B7",
+                badge: "Capa 3 • Procesamiento de Lenguaje Natural (NLP)",
+                badgeBg: "rgba(16, 185, 129, 0.25)",
+                badgeColor: "#34D399",
                 colorHex: 0x10B981,
-                desc: "Motor analítico de filtrado basado en contenido. Vectoriza textos con TF-IDF (25.000 dimensiones) y calcula la Similitud del Coseno angular entre la necesidad del estudiante y las sinopsis de los libros.",
+                glowHex: 0x6EE7B7,
+                desc: "Motor analítico de filtrado basado en contenido. Vectoriza la consulta del alumno sobre un vocabulario de 25.000 dimensiones y calcula la Similitud del Coseno angular en menos de 20 milisegundos.",
                 features: [
-                    { icon: "📐", text: "Modelo de Espacio Vectorial (Vector Space Model)" },
+                    { icon: "📐", text: "Modelo de Espacio Vectorial (Vector Space Model - VSM)" },
                     { icon: "📊", text: "TF-IDF N-gramas (1,2) con sublinear_tf=True" },
-                    { icon: "⚡", text: "Similitud del Coseno con inferencia en 15 ms" },
-                    { icon: "🌐", text: "Expansión léxica bilingüe (Español ⇄ Inglés)" }
+                    { icon: "⚡", text: "Similitud del Coseno: Producto punto sobre normas L2" },
+                    { icon: "🌐", text: "Mapeo léxico bilingüe de términos técnicos (Español ⇄ Inglés)" }
                 ],
-                techs: ["scikit-learn", "TfidfVectorizer", "cosine_similarity", "NumPy", "Pandas"]
+                techs: ["scikit-learn", "TfidfVectorizer", "cosine_similarity", "NumPy & SciPy"]
             },
             {
                 id: 4,
-                name: "Capa 4: Base de Datos y Catálogo Curado",
-                badge: "Capa 4 • Datos y Persistencia",
-                badgeBg: "rgba(245, 158, 11, 0.2)",
-                badgeColor: "#FDE68A",
+                name: "Capa 4: Base de Datos y Biblioteca Curada",
+                badge: "Capa 4 • Persistencia y Datos",
+                badgeBg: "rgba(245, 158, 11, 0.25)",
+                badgeColor: "#FBBF24",
                 colorHex: 0xF59E0B,
+                glowHex: 0xFCD34D,
                 desc: "Catálogo estructurado de 2.521 libros académicos universitarios reales, extraídos mediante Google Books API a lo largo de 53 áreas del conocimiento universitario debidamente clasificadas y etiquetadas.",
                 features: [
                     { icon: "📚", text: "2.521 libros universitarios únicos y verificados" },
@@ -480,116 +481,388 @@
         ];
 
         // ─────────────────────────────────────────────────────────────────────
-        // CONFIGURACIÓN DE ESCENA THREE.JS
+        // ESCENA 3D THREE.JS
         // ─────────────────────────────────────────────────────────────────────
         const container = document.getElementById('canvas-container');
         const scene = new THREE.Scene();
-        scene.fog = new THREE.FogExp2(0x090D16, 0.018);
+        scene.fog = new THREE.FogExp2(0x050811, 0.015);
 
         const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(38, 28, 48);
+        camera.position.set(40, 26, 46);
 
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 1.1;
+        renderer.toneMappingExposure = 1.35;
         container.appendChild(renderer.domElement);
 
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
         controls.dampingFactor = 0.05;
-        controls.maxPolarAngle = Math.PI / 2 + 0.1;
+        controls.maxPolarAngle = Math.PI / 2 + 0.08;
         controls.minDistance = 15;
-        controls.maxDistance = 100;
+        controls.maxDistance = 95;
         controls.target.set(0, 0, 0);
 
-        // ── ILUMINACIÓN ──
-        const ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.7);
+        // ── LUCES INTENSAS Y VIBRANTES ──
+        const ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.9);
         scene.add(ambientLight);
 
-        const dirLight = new THREE.DirectionalLight(0xFFFFFF, 1.2);
-        dirLight.position.set(20, 40, 20);
-        scene.add(dirLight);
+        const mainLight = new THREE.DirectionalLight(0xFFFFFF, 1.8);
+        mainLight.position.set(25, 45, 25);
+        scene.add(mainLight);
 
-        const blueLight = new THREE.PointLight(0x3B82F6, 2, 80);
-        blueLight.position.set(-25, 20, 25);
-        scene.add(blueLight);
+        // Luces puntuales de colores para acentuar el brillo
+        const lightBlue = new THREE.PointLight(0x0088FF, 3.5, 60);
+        lightBlue.position.set(-20, 25, 20);
+        scene.add(lightBlue);
 
-        const purpleLight = new THREE.PointLight(0x8B5CF6, 2, 80);
-        purpleLight.position.set(25, -20, -25);
-        scene.add(purpleLight);
+        const lightPurple = new THREE.PointLight(0xA855F7, 3.5, 60);
+        lightPurple.position.set(20, 10, -20);
+        scene.add(lightPurple);
 
-        // ── GRILLA DE FONDO SUTIL ──
-        const gridHelper = new THREE.GridHelper(90, 45, 0x1E293B, 0x0F172A);
-        gridHelper.position.y = -18;
-        scene.add(gridHelper);
+        const lightGreen = new THREE.PointLight(0x10B981, 3.5, 60);
+        lightGreen.position.set(-20, -10, -20);
+        scene.add(lightGreen);
+
+        const lightAmber = new THREE.PointLight(0xF59E0B, 3.5, 60);
+        lightAmber.position.set(20, -25, 20);
+        scene.add(lightAmber);
+
+        // Grilla de piso tecnológica
+        const grid = new THREE.GridHelper(90, 45, 0x1E293B, 0x0A101D);
+        grid.position.y = -26;
+        scene.add(grid);
 
         // ─────────────────────────────────────────────────────────────────────
-        // CREACIÓN DE LAS 4 CAPAS 3D FLOTANTES (SLABS)
+        // TEXTURAS PROCEDURALES PARA HACER CADA CAPA VISUALMENTE REALISTA
+        // ─────────────────────────────────────────────────────────────────────
+        function createTextTexture(title, subtitle, colorHexStr) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 1024;
+            canvas.height = 700;
+            const ctx = canvas.getContext('2d');
+
+            // Fondo sutil con degradado
+            const grad = ctx.createLinearGradient(0, 0, 1024, 700);
+            grad.addColorStop(0, '#0F172A');
+            grad.addColorStop(1, '#020617');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 1024, 700);
+
+            // Borde brillante
+            ctx.strokeStyle = colorHexStr;
+            ctx.lineWidth = 14;
+            ctx.strokeRect(10, 10, 1004, 680);
+
+            // Encabezado
+            ctx.fillStyle = colorHexStr;
+            ctx.font = 'bold 50px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText(title, 50, 100);
+
+            ctx.fillStyle = '#94A3B8';
+            ctx.font = '30px "JetBrains Mono", monospace';
+            ctx.fillText(subtitle, 50, 150);
+
+            // Línea separadora
+            ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(50, 180);
+            ctx.lineTo(974, 180);
+            ctx.stroke();
+
+            return canvas;
+        }
+
+        // ── Textura para Capa 1: Interfaz Streamlit (Chat UI + Lector) ──
+        function getTextureCapa1() {
+            const canvas = createTextTexture("CAPA 1: INTERFAZ & CANVAS LECTOR", "Streamlit 1.35+ • Google Books Embed", "#0088FF");
+            const ctx = canvas.getContext('2d');
+
+            // Burbuja de usuario
+            ctx.fillStyle = '#1E3A8A';
+            ctx.beginPath();
+            ctx.roundRect(400, 220, 560, 90, 16);
+            ctx.fill();
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = '28px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText("Estudiante: Necesito libros para aprender punteros en C...", 430, 275);
+
+            // Burbuja del Agente
+            ctx.fillStyle = '#1E293B';
+            ctx.beginPath();
+            ctx.roundRect(60, 340, 560, 140, 16);
+            ctx.fill();
+            ctx.fillStyle = '#38BDF8';
+            ctx.font = 'bold 26px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText("🤖 Agente Bibliotecario:", 90, 385);
+            ctx.fillStyle = '#E2E8F0';
+            ctx.font = '24px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText("Te recomiendo 'Cómo programar en C' (Deitel).", 90, 425);
+            ctx.fillText("En el Cap. 7 explica la memoria RAM gráficamente...", 90, 460);
+
+            // Tarjeta de libro y lector
+            ctx.fillStyle = 'rgba(255,255,255,0.06)';
+            ctx.strokeStyle = '#0088FF';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.roundRect(650, 340, 310, 280, 16);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#F59E0B';
+            ctx.font = 'bold 24px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText("📖 LECTOR INCORPORADO", 680, 385);
+            ctx.fillStyle = '#94A3B8';
+            ctx.font = '20px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText("Vista previa de páginas oficiales", 680, 425);
+            ctx.fillText("Google Books API Reader", 680, 455);
+
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        // ── Textura para Capa 2: Agente Gemini 3.1 (Tool Calling) ──
+        function getTextureCapa2() {
+            const canvas = createTextTexture("CAPA 2: AGENTE AUTÓNOMO COGNITIVO", "Google Gemini 3.1 Flash Lite • Tool Calling RAG", "#A855F7");
+            const ctx = canvas.getContext('2d');
+
+            // Tarjeta de prompt de sistema
+            ctx.fillStyle = '#1E1B4B';
+            ctx.strokeStyle = '#A855F7';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.roundRect(60, 220, 420, 400, 16);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#C084FC';
+            ctx.font = 'bold 28px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText("🧠 SYSTEM PROMPT & MEMORIA", 90, 275);
+            ctx.fillStyle = '#CBD5E1';
+            ctx.font = '22px "JetBrains Mono", monospace';
+            ctx.fillText("• Rol: Tutor Universitario", 90, 330);
+            ctx.fillText("• Indagación: Pregunta nivel", 90, 375);
+            ctx.fillText("• Explicabilidad pedagógica", 90, 420);
+            ctx.fillText("• Memoria de chat Multi-turn", 90, 465);
+
+            // Tool Calling
+            ctx.fillStyle = '#1E1B4B';
+            ctx.strokeStyle = '#E879F9';
+            ctx.beginPath();
+            ctx.roundRect(520, 220, 440, 400, 16);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#E879F9';
+            ctx.font = 'bold 28px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText("🛠️ FUNCTION / TOOL CALLING", 550, 275);
+            ctx.fillStyle = '#34D399';
+            ctx.font = 'bold 24px "JetBrains Mono", monospace';
+            ctx.fillText("buscar_libros(", 550, 340);
+            ctx.fillStyle = '#CBD5E1';
+            ctx.font = '22px "JetBrains Mono", monospace';
+            ctx.fillText("  tema='pointers C memory',", 550, 385);
+            ctx.fillText("  materia='C y C++',", 550, 425);
+            ctx.fillText("  nivel='Basico'", 550, 465);
+            ctx.fillStyle = '#34D399';
+            ctx.font = 'bold 24px "JetBrains Mono", monospace';
+            ctx.fillText(")", 550, 505);
+
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        // ── Textura para Capa 3: Motor TF-IDF + Coseno ──
+        function getTextureCapa3() {
+            const canvas = createTextTexture("CAPA 3: MOTOR ANALÍTICO MACHINE LEARNING", "Vector Space Model • TF-IDF (25.000 dims) • Coseno", "#10B981");
+            const ctx = canvas.getContext('2d');
+
+            // Fórmulas matemáticas
+            ctx.fillStyle = '#064E3B';
+            ctx.strokeStyle = '#10B981';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.roundRect(60, 220, 420, 400, 16);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#34D399';
+            ctx.font = 'bold 30px "JetBrains Mono", monospace';
+            ctx.fillText("TF-IDF = tf × log(N/df)", 90, 290);
+
+            ctx.font = 'bold 28px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#6EE7B7';
+            ctx.fillText("cos(θ) = (A · B) / (||A|| ||B||)", 90, 380);
+
+            ctx.fillStyle = '#CBD5E1';
+            ctx.font = '22px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText("• Inferencia: ~15 milisegundos", 90, 450);
+            ctx.fillText("• Vocabulario: 25.000 n-gramas", 90, 495);
+            ctx.fillText("• Expansión de términos ES ⇄ EN", 90, 540);
+
+            // Representación de ranking
+            ctx.fillStyle = '#064E3B';
+            ctx.strokeStyle = '#34D399';
+            ctx.beginPath();
+            ctx.roundRect(520, 220, 440, 400, 16);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#34D399';
+            ctx.font = 'bold 28px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText("🎯 RANKING DE SIMILITUD", 550, 275);
+
+            ctx.fillStyle = '#FDE68A';
+            ctx.font = 'bold 24px "JetBrains Mono", monospace';
+            ctx.fillText("1. Deitel C Pointers [34.6%]", 550, 340);
+            ctx.fillText("2. Kernighan Ritchie [28.2%]", 550, 410);
+            ctx.fillText("3. Kochan Prog in C  [22.8%]", 550, 480);
+
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        // ── Textura para Capa 4: Catálogo de 2.521 Libros ──
+        function getTextureCapa4() {
+            const canvas = createTextTexture("CAPA 4: CATÁLOGO DE 2.521 LIBROS ACADÉMICOS", "Dataset Estructurado • 53 Áreas del Conocimiento • CSV", "#F59E0B");
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = '#451A03';
+            ctx.strokeStyle = '#F59E0B';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.roundRect(60, 220, 900, 400, 16);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#FCD34D';
+            ctx.font = 'bold 36px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText("📚 2.521 LIBROS REALES INDEXADOS", 100, 290);
+
+            ctx.fillStyle = '#CBD5E1';
+            ctx.font = '24px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText("• 53 Materias: Programación, Cálculo, IA, Redes, Bases de Datos, Física...", 100, 360);
+            ctx.fillText("• 3 Niveles: Básico (1.384), Intermedio (245), Avanzado (892)", 100, 415);
+            ctx.fillText("• Metadatos: Título, Autores, Materia, Nivel, Sinopsis, Google Books ID", 100, 470);
+            ctx.fillText("• Fuente de Datos: Google Books API Oficial (Volúmenes Universitarios)", 100, 525);
+
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        // CREACIÓN DE LAS 4 CAPAS 3D FLOTANTES (SLABS DE COLOR VIBRANTE)
         // ─────────────────────────────────────────────────────────────────────
         const layersGroup = new THREE.Group();
         scene.add(layersGroup);
 
         const layerMeshes = [];
-        const layerPositionsCollapsed = [7.5, 2.5, -2.5, -7.5];
+        const layerPositionsCollapsed = [8, 2.5, -3, -8.5];
         const layerPositionsExploded  = [18, 6, -6, -18];
         let isExploded = true;
         let selectedLayerIndex = 0;
 
-        const layerWidth = 26;
-        const layerDepth = 18;
-        const layerThickness = 1.0;
+        const layerWidth = 28;
+        const layerDepth = 19;
+        const layerThickness = 1.2;
+
+        const texturasCapas = [
+            getTextureCapa1(),
+            getTextureCapa2(),
+            getTextureCapa3(),
+            getTextureCapa4()
+        ];
 
         LAYERS_DATA.forEach((data, index) => {
             const slabGroup = new THREE.Group();
             slabGroup.userData = { index: index, data: data };
 
-            // Geometría del bloque principal
-            const geometry = new THREE.BoxGeometry(layerWidth, layerThickness, layerDepth);
-            
-            // Material translúcido estilo vidrio templado de color
-            const material = new THREE.MeshPhysicalMaterial({
-                color: data.colorHex,
+            // Material para la cara superior con la textura visual del proyecto
+            const topMaterial = new THREE.MeshBasicMaterial({
+                map: texturasCapas[index],
                 transparent: true,
-                opacity: 0.38,
-                roughness: 0.2,
-                metalness: 0.1,
-                transmission: 0.6,
-                ior: 1.4,
-                reflectivity: 0.5,
-                clearcoat: 0.8,
+                opacity: 0.96
             });
 
-            const mesh = new THREE.Mesh(geometry, material);
+            // Material vibrante de color para los lados y base
+            const sideMaterial = new THREE.MeshPhysicalMaterial({
+                color: data.colorHex,
+                emissive: data.colorHex,
+                emissiveIntensity: 0.35,
+                transparent: true,
+                opacity: 0.82,
+                roughness: 0.25,
+                metalness: 0.2,
+                clearcoat: 0.9,
+            });
+
+            // Array de materiales: [right, left, top, bottom, front, back]
+            const materials = [
+                sideMaterial,
+                sideMaterial,
+                topMaterial,
+                sideMaterial,
+                sideMaterial,
+                sideMaterial
+            ];
+
+            const geometry = new THREE.BoxGeometry(layerWidth, layerThickness, layerDepth);
+            const mesh = new THREE.Mesh(geometry, materials);
             slabGroup.add(mesh);
 
-            // Borde brillante de alambre
+            // Borde luminoso brillante
             const edges = new THREE.EdgesGeometry(geometry);
             const lineMaterial = new THREE.LineBasicMaterial({
-                color: data.colorHex,
-                linewidth: 2,
+                color: data.glowHex,
+                linewidth: 3,
                 transparent: true,
                 opacity: 0.95
             });
             const wireframe = new THREE.LineSegments(edges, lineMaterial);
             slabGroup.add(wireframe);
 
-            // Nodos internos / Circuitos de datos en cada capa
-            const nodesGroup = new THREE.Group();
-            const nodeGeo = new THREE.SphereGeometry(0.35, 16, 16);
-            const nodeMat = new THREE.MeshBasicMaterial({ color: data.colorHex });
-
-            for (let x = -layerWidth/2 + 3; x <= layerWidth/2 - 3; x += 4) {
-                for (let z = -layerDepth/2 + 3; z <= layerDepth/2 - 3; z += 4) {
-                    if (Math.random() > 0.3) {
-                        const node = new THREE.Mesh(nodeGeo, nodeMat);
-                        node.position.set(x + (Math.random()-0.5), 0.6, z + (Math.random()-0.5));
-                        nodesGroup.add(node);
-                    }
+            // Elementos 3D temáticos encima de cada capa:
+            if (index === 3) {
+                // CAPA 4: Mini-libros 3D reales alineados como una biblioteca
+                const booksGroup = new THREE.Group();
+                const bookColors = [0xEF4444, 0x3B82F6, 0x10B981, 0xF59E0B, 0x8B5CF6, 0xEC4899];
+                
+                for (let b = 0; b < 24; b++) {
+                    const bGeo = new THREE.BoxGeometry(0.5, 1.8, 1.2);
+                    const bMat = new THREE.MeshStandardMaterial({
+                        color: bookColors[b % bookColors.length],
+                        roughness: 0.3
+                    });
+                    const bMesh = new THREE.Mesh(bGeo, bMat);
+                    bMesh.position.set(-11 + b * 0.95, 1.5, 7.5);
+                    bMesh.rotation.y = (Math.random() - 0.5) * 0.15;
+                    booksGroup.add(bMesh);
                 }
+                slabGroup.add(booksGroup);
+            } else if (index === 2) {
+                // CAPA 3: Puntos de dispersión vectorial 3D (Vector Space Model)
+                const vectorGroup = new THREE.Group();
+                const vGeo = new THREE.SphereGeometry(0.35, 16, 16);
+                const vMat = new THREE.MeshBasicMaterial({ color: 0x6EE7B7 });
+
+                for (let v = 0; v < 30; v++) {
+                    const dot = new THREE.Mesh(vGeo, vMat);
+                    dot.position.set((Math.random() - 0.5) * 22, 1.2 + Math.random() * 1.5, (Math.random() - 0.5) * 14);
+                    vectorGroup.add(dot);
+                }
+                slabGroup.add(vectorGroup);
+            } else if (index === 1) {
+                // CAPA 2: Nodos de red neuronal / Gemini Brain
+                const brainGroup = new THREE.Group();
+                const nGeo = new THREE.OctahedronGeometry(0.5);
+                const nMat = new THREE.MeshStandardMaterial({ color: 0xE879F9, emissive: 0xA855F7, emissiveIntensity: 0.6 });
+
+                for (let n = 0; n < 16; n++) {
+                    const node = new THREE.Mesh(nGeo, nMat);
+                    node.position.set(-9 + (n % 4) * 6, 1.4 + Math.sin(n) * 0.8, -6 + Math.floor(n / 4) * 4);
+                    brainGroup.add(node);
+                }
+                slabGroup.add(brainGroup);
             }
-            slabGroup.add(nodesGroup);
 
             // Posición vertical inicial (expandida)
             slabGroup.position.y = layerPositionsExploded[index];
@@ -600,13 +873,12 @@
 
         // ── COLUMNAS DE INTERCONEXIÓN ENTRE CAPAS ──
         const pillarMat = new THREE.LineDashedMaterial({
-            color: 0x475569,
-            dashSize: 0.6,
-            gapSize: 0.3,
+            color: 0x64748B,
+            dashSize: 0.8,
+            gapSize: 0.4,
             transparent: true,
-            opacity: 0.4
+            opacity: 0.5
         });
-        const cornerPillars = [];
         const corners = [
             [-layerWidth/2 + 1, -layerDepth/2 + 1],
             [layerWidth/2 - 1, -layerDepth/2 + 1],
@@ -616,34 +888,33 @@
 
         corners.forEach(([cx, cz]) => {
             const pGeo = new THREE.BufferGeometry().setFromPoints([
-                new THREE.Vector3(cx, -20, cz),
-                new THREE.Vector3(cx, 20, cz)
+                new THREE.Vector3(cx, -22, cz),
+                new THREE.Vector3(cx, 22, cz)
             ]);
             const pLine = new THREE.Line(pGeo, pillarMat);
             pLine.computeLineDistances();
             layersGroup.add(pLine);
-            cornerPillars.push(pLine);
         });
 
         // ─────────────────────────────────────────────────────────────────────
         // SIMULACIÓN DE FLUJO DE PARTÍCULAS
         // ─────────────────────────────────────────────────────────────────────
-        const particleCount = 60;
+        const particleCount = 80;
         const particleGeo = new THREE.BufferGeometry();
         const particlePos = new Float32Array(particleCount * 3);
         const particleSpeeds = new Float32Array(particleCount);
 
         for (let i = 0; i < particleCount; i++) {
             particlePos[i * 3]     = (Math.random() - 0.5) * (layerWidth - 4);
-            particlePos[i * 3 + 1] = 18; // Inicia en la capa 1
+            particlePos[i * 3 + 1] = 18;
             particlePos[i * 3 + 2] = (Math.random() - 0.5) * (layerDepth - 4);
-            particleSpeeds[i]      = 0.15 + Math.random() * 0.25;
+            particleSpeeds[i]      = 0.22 + Math.random() * 0.3;
         }
 
         particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePos, 3));
         const particleMat = new THREE.PointsMaterial({
-            color: 0x10B981,
-            size: 0.8,
+            color: 0x38BDF8,
+            size: 1.2,
             transparent: true,
             opacity: 0.0,
             blending: THREE.AdditiveBlending
@@ -661,23 +932,22 @@
             const simText = document.getElementById('sim-text');
             banner.style.display = 'flex';
 
-            particleMat.opacity = 0.95;
+            particleMat.opacity = 1.0;
 
-            // Etapas del flujo
             const stages = [
                 { text: "Paso 1: Estudiante escribe 'Punteros en C' en la Capa 1 (Interfaz Streamlit)", targetLayer: 0 },
                 { text: "Paso 2: Capa 2 (Gemini 3.1) razona la necesidad y ejecuta la Tool 'buscar_libros()'", targetLayer: 1 },
                 { text: "Paso 3: Capa 3 (TF-IDF + Coseno) vectoriza términos y busca similitud angular", targetLayer: 2 },
-                { text: "Paso 4: Capa 4 (Dataset) devuelve los 2.521 libros indexados y rankea los mejores", targetLayer: 3 },
+                { text: "Paso 4: Capa 4 (Catálogo) consulta los 2.521 libros indexados y rankea los mejores", targetLayer: 3 },
                 { text: "Paso 5: Capa 2 (Gemini) redacta la justificación pedagógica y analogía del puntero", targetLayer: 1 },
-                { text: "Paso 6: Capa 1 proyecta la respuesta + tarjeta con vista previa de Google Books", targetLayer: 0 }
+                { text: "Paso 6: Capa 1 proyecta la respuesta + tarjeta interactiva con Google Books", targetLayer: 0 }
             ];
 
             let stageIdx = 0;
 
             function runStage() {
                 if (stageIdx >= stages.length) {
-                    simText.innerText = "¡Consulta procesada exitosamente en 18 milisegundos!";
+                    simText.innerText = "¡Consulta completada con éxito en 18 milisegundos!";
                     setTimeout(() => {
                         banner.style.display = 'none';
                         particleMat.opacity = 0.0;
@@ -689,14 +959,14 @@
                 simText.innerText = stages[stageIdx].text;
                 seleccionarCapa(stages[stageIdx].targetLayer);
                 stageIdx++;
-                setTimeout(runStage, 2200);
+                setTimeout(runStage, 2400);
             }
 
             runStage();
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        // INTERACCIÓN Y CONTROL DE CAPAS
+        // INTERACCIÓN Y NAVEGACIÓN ENTRE CAPAS
         // ─────────────────────────────────────────────────────────────────────
         function toggleExplode() {
             isExploded = !isExploded;
@@ -704,7 +974,7 @@
 
             layerMeshes.forEach((mesh, idx) => {
                 new TWEEN.Tween(mesh.position)
-                    .to({ y: positions[idx] }, 900)
+                    .to({ y: positions[idx] }, 950)
                     .easing(TWEEN.Easing.Cubic.Out)
                     .start();
             });
@@ -717,33 +987,22 @@
             selectedLayerIndex = index;
             const data = LAYERS_DATA[index];
 
-            // Actualizar botones de navegación inferior
             for (let i = 0; i < 4; i++) {
                 document.getElementById(`nav-btn-${i}`).classList.toggle('active', i === index);
             }
 
-            // Resaltar visualmente la capa 3D seleccionada
             layerMeshes.forEach((meshGroup, idx) => {
-                const slabMesh = meshGroup.children[0];
                 const wireframe = meshGroup.children[1];
 
                 if (idx === index) {
-                    new TWEEN.Tween(slabMesh.material)
-                        .to({ opacity: 0.65 }, 300)
-                        .start();
                     wireframe.material.opacity = 1.0;
-                    meshGroup.scale.set(1.04, 1.15, 1.04);
+                    meshGroup.scale.set(1.05, 1.15, 1.05);
                 } else {
-                    new TWEEN.Tween(slabMesh.material)
-                        .to({ opacity: 0.28 }, 300)
-                        .start();
                     wireframe.material.opacity = 0.45;
                     meshGroup.scale.set(1.0, 1.0, 1.0);
                 }
             });
 
-            // Actualizar panel lateral inspector
-            const inspector = document.getElementById('inspector');
             const badge = document.getElementById('insp-badge');
             const title = document.getElementById('insp-title');
             const desc = document.getElementById('insp-desc');
@@ -765,7 +1024,6 @@
                 <span class="tech-pill">${t}</span>
             `).join('');
 
-            // Suave ajuste de cámara para enfocar la capa
             const targetY = isExploded ? layerPositionsExploded[index] : layerPositionsCollapsed[index];
             new TWEEN.Tween(controls.target)
                 .to({ y: targetY }, 600)
@@ -773,12 +1031,11 @@
                 .start();
         }
 
-        // ── RAYCASTING: Clic sobre una capa 3D ──
+        // Raycaster para clics sobre los bloques 3D
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
 
         window.addEventListener('click', (event) => {
-            // Evitar clics sobre elementos del HUD
             if (event.target.closest('.hud-overlay *')) return;
 
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -798,7 +1055,6 @@
             }
         });
 
-        // ── RESIZE EVENT ──
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
@@ -806,7 +1062,7 @@
         });
 
         // ─────────────────────────────────────────────────────────────────────
-        // BUCLE DE ANIMACIÓN PRINCIPAL
+        // LOOP DE RENDERIZADO
         // ─────────────────────────────────────────────────────────────────────
         let clock = new THREE.Clock();
 
@@ -816,12 +1072,12 @@
 
             const time = clock.getElapsedTime();
 
-            // Rotación suave del grupo completo cuando no se interactúa
+            // Rotación suave del grupo completo
             layersGroup.rotation.y = Math.sin(time * 0.15) * 0.08;
 
             // Flotación sutil de cada capa
             layerMeshes.forEach((mesh, i) => {
-                mesh.position.x = Math.sin(time * 0.8 + i) * 0.15;
+                mesh.position.x = Math.sin(time * 0.8 + i) * 0.12;
             });
 
             // Animación de partículas si la simulación está activa
@@ -841,7 +1097,7 @@
         }
 
         animate();
-        seleccionarCapa(0); // Iniciar con Capa 1 seleccionada
+        seleccionarCapa(0);
     </script>
 </body>
 </html>
