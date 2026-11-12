@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arquitectura 3D por Capas - Agente Bibliotecario Inteligente</title>
+    <!-- Three.js & OrbitControls via CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-color: #090D16;
+            --layer-1-color: #3B82F6; /* Streamlit UI - Azul */
+            --layer-2-color: #8B5CF6; /* Gemini Agent - Púrpura */
+            --layer-3-color: #10B981; /* ML / TF-IDF - Esmeralda */
+            --layer-4-color: #F59E0B; /* Dataset - Ámbar */
+            --glass-bg: rgba(15, 23, 42, 0.75);
+            --border-glow: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: #F8FAFC;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* ── INTERFAZ SUPERPUESTA (HUD) ── */
+        .hud-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 24px 32px;
+        }
+
+        .hud-overlay * {
+            pointer-events: auto;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .brand-title {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-glow);
+            padding: 18px 24px;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .brand-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.2));
+            color: #93C5FD;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 4px 10px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            border: 1px solid rgba(147, 197, 253, 0.3);
+        }
+
+        h1 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #FFFFFF 0%, #CBD5E1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 4px;
+        }
+
+        .brand-subtitle {
+            font-size: 0.85rem;
+            color: #94A3B8;
+        }
+
+        /* Controles Superiores */
+        .top-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-glow);
+            color: #F8FAFC;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 10px 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: rgba(30, 41, 59, 0.9);
+            border-color: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+            border: none;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 6px 25px rgba(37, 99, 235, 0.6);
+        }
+
+        /* Panel Lateral de Detalle de Capa */
+        .layer-inspector {
+            position: absolute;
+            right: 32px;
+            top: 100px;
+            width: 380px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glow);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            max-height: calc(100vh - 160px);
+            overflow-y: auto;
+        }
+
+        .inspector-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
+        }
+
+        .inspector-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            line-height: 1.25;
+        }
+
+        .inspector-desc {
+            font-size: 0.88rem;
+            color: #94A3B8;
+            line-height: 1.5;
+            margin-bottom: 18px;
+        }
+
+        .features-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .feature-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 0.82rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-item span.icon {
+            font-size: 1.1rem;
+        }
+
+        .tech-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .tech-pill {
+            background: rgba(148, 163, 184, 0.1);
+            color: #CBD5E1;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* Footer con Selector Rápido de Capas */
+        .footer-nav {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-glow);
+            padding: 10px 16px;
+            border-radius: 40px;
+            align-self: center;
+        }
+
+        .layer-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: #94A3B8;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .layer-btn .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .layer-btn:hover {
+            color: #FFFFFF;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .layer-btn.active {
+            color: #FFFFFF;
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Indicador de simulación de flujo */
+        .simulation-banner {
+            position: absolute;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid #10B981;
+            color: #6EE7B7;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+            animation: pulseGlow 1.5s infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.9; }
+            50% { opacity: 0.4; }
+        }
+
+        /* Instrucciones de interacción 3D */
+        .camera-tip {
+            position: absolute;
+            left: 32px;
+            bottom: 32px;
+            color: #64748B;
+            font-size: 0.78rem;
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(15, 23, 42, 0.6);
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        @media (max-width: 900px) {
+            .layer-inspector {
+                display: none;
+            }
+            .hud-overlay {
+                padding: 16px;
+            }
+            h1 {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="canvas-container"></div>
+
+    <div class="hud-overlay">
+        <!-- Header -->
+        <div class="header">
+            <div class="brand-title">
+                <div class="brand-badge">Sistemas Inteligentes • Proyecto de Aula</div>
+                <h1>Arquitectura del Agente Bibliotecario</h1>
+                <div class="brand-subtitle">Prototipo Tridimensional Interactivo de Capas Tecnológicas</div>
+            </div>
+
+            <div class="top-actions">
+                <button class="btn" id="btn-explode" onclick="toggleExplode()">
+                    <span id="explode-icon">⤢</span> <span id="explode-text">Separar Capas (3D Explode)</span>
+                </button>
+                <button class="btn btn-primary" onclick="simularFlujo()">
+                    ⚡ Simular Consulta ("Punteros en C")
+                </button>
+                <a href="https://agente-bibliotecario-inteligente-wrivas.streamlit.app/" target="_blank" class="btn">
+                    🌐 Abrir App en Vivo ↗
+                </a>
+            </div>
+        </div>
+
+        <!-- Banner de flujo -->
+        <div class="simulation-banner" id="sim-banner">
+            <span class="pulse-dot">●</span> <span id="sim-text">Flujo de datos activo...</span>
+        </div>
+
+        <!-- Panel Lateral Inspector -->
+        <div class="layer-inspector" id="inspector">
+            <div class="inspector-badge" id="insp-badge" style="background: rgba(59, 130, 246, 0.2); color: #93C5FD;">
+                Capa 1 • Frontend
+            </div>
+            <div class="inspector-title" id="insp-title">Interfaz de Usuario y Lector</div>
+            <div class="inspector-desc" id="insp-desc">
+                Interfaz web conversacional construida en Streamlit con diseño abierto estilo ChatGPT/Gemini y panel Canvas de lectura con Google Books integrado.
+            </div>
+
+            <div class="features-list" id="insp-features">
+                <div class="feature-item"><span class="icon">💬</span> Chat reactivo sin bordes toscos</div>
+                <div class="feature-item"><span class="icon">📖</span> Lector Split-Screen / Canvas</div>
+                <div class="feature-item"><span class="icon">📱</span> Adaptación fluida a móviles</div>
+            </div>
+
+            <div class="tech-tags" id="insp-tags">
+                <span class="tech-pill">Python</span>
+                <span class="tech-pill">Streamlit 1.35+</span>
+                <span class="tech-pill">Google Books Embed</span>
+                <span class="tech-pill">WebSockets</span>
+            </div>
+        </div>
+
+        <!-- Instrucción de cámara -->
+        <div class="camera-tip">
+            🖱️ Clic y arrastra para rotar en 3D • Scroll para zoom • Clic en una capa para seleccionarla
+        </div>
+
+        <!-- Footer Selector de Capas -->
+        <div class="footer-nav">
+            <button class="layer-btn active" onclick="seleccionarCapa(0)" id="nav-btn-0">
+                <span class="dot" style="background: var(--layer-1-color);"></span> Capa 1: Interfaz
+            </button>
+            <button class="layer-btn" onclick="seleccionarCapa(1)" id="nav-btn-1">
+                <span class="dot" style="background: var(--layer-2-color);"></span> Capa 2: Agente Gemini
+            </button>
+            <button class="layer-btn" onclick="seleccionarCapa(2)" id="nav-btn-2">
+                <span class="dot" style="background: var(--layer-3-color);"></span> Capa 3: Motor ML
+            </button>
+            <button class="layer-btn" onclick="seleccionarCapa(3)" id="nav-btn-3">
+                <span class="dot" style="background: var(--layer-4-color);"></span> Capa 4: Dataset 2.521
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // ─────────────────────────────────────────────────────────────────────
+        // DATOS DE LAS 4 CAPAS DEL PROYECTO
+        // ─────────────────────────────────────────────────────────────────────
+        const LAYERS_DATA = [
+            {
+                id: 1,
+                name: "Capa 1: Interfaz de Usuario y Lector",
+                badge: "Capa 1 • Presentación y UX",
+                badgeBg: "rgba(59, 130, 246, 0.2)",
+                badgeColor: "#93C5FD",
+                colorHex: 0x3B82F6,
+                desc: "Experiencia de usuario conversacional fluida sin cajas cerradas (estilo ChatGPT y Gemini). Cuenta con panel lateral interactivo Split-Screen / Canvas que incrusta el visor oficial de Google Books.",
+                features: [
+                    { icon: "💬", text: "Chat abierto con barra de entrada flotante" },
+                    { icon: "📖", text: "Lector y vista previa de páginas oficial" },
+                    { icon: "🎯", text: "Tarjetas dinámicas con afinidad porcentual" },
+                    { icon: "📱", text: "Responsividad Mobile-First para celulares" }
+                ],
+                techs: ["Python", "Streamlit 1.35+", "Google Books Iframe", "CSS3 Glassmorphism"]
+            },
+            {
+                id: 2,
+                name: "Capa 2: Agente Autónomo Cognitivo",
+                badge: "Capa 2 • Razonamiento y LLM",
+                badgeBg: "rgba(139, 92, 246, 0.2)",
+                badgeColor: "#C4B5FD",
+                colorHex: 0x8B5CF6,
+                desc: "Cerebro conversacional basado en Google Gemini 3.1 Flash Lite. Mantiene memoria del diálogo (Multi-turn), indaga dudas y ejecuta autónomamente Tool Calling para consultar el catálogo matemático.",
+                features: [
+                    { icon: "🧠", text: "Modelo Gemini 3.1 Flash Lite con System Prompt" },
+                    { icon: "🛠️", text: "Tool Calling nativo hacia la función buscar_libros" },
+                    { icon: "💡", text: "Explicabilidad Pedagógica (Explainable AI / XAI)" },
+                    { icon: "🔄", text: "Re-ranqueo y descarte de libros no pertinentes" }
+                ],
+                techs: ["google-genai SDK", "Gemini 3.1", "Function Calling", "Multi-turn Chat", "RAG"]
+            },
+            {
+                id: 3,
+                name: "Capa 3: Motor Matemático de Machine Learning",
+                badge: "Capa 3 • NLP y Similitud",
+                badgeBg: "rgba(16, 185, 129, 0.2)",
+                badgeColor: "#6EE7B7",
+                colorHex: 0x10B981,
+                desc: "Motor analítico de filtrado basado en contenido. Vectoriza textos con TF-IDF (25.000 dimensiones) y calcula la Similitud del Coseno angular entre la necesidad del estudiante y las sinopsis de los libros.",
+                features: [
+                    { icon: "📐", text: "Modelo de Espacio Vectorial (Vector Space Model)" },
+                    { icon: "📊", text: "TF-IDF N-gramas (1,2) con sublinear_tf=True" },
+                    { icon: "⚡", text: "Similitud del Coseno con inferencia en 15 ms" },
+                    { icon: "🌐", text: "Expansión léxica bilingüe (Español ⇄ Inglés)" }
+                ],
+                techs: ["scikit-learn", "TfidfVectorizer", "cosine_similarity", "NumPy", "Pandas"]
+            },
+            {
+                id: 4,
+                name: "Capa 4: Base de Datos y Catálogo Curado",
+                badge: "Capa 4 • Datos y Persistencia",
+                badgeBg: "rgba(245, 158, 11, 0.2)",
+                badgeColor: "#FDE68A",
+                colorHex: 0xF59E0B,
+                desc: "Catálogo estructurado de 2.521 libros académicos universitarios reales, extraídos mediante Google Books API a lo largo de 53 áreas del conocimiento universitario debidamente clasificadas y etiquetadas.",
+                features: [
+                    { icon: "📚", text: "2.521 libros universitarios únicos y verificados" },
+                    { icon: "🏷️", text: "53 categorías (Cálculo, C, IA, Redes, Física...)" },
+                    { icon: "📈", text: "Niveles pedagógicos: Básico, Intermedio, Avanzado" },
+                    { icon: "🖼️", text: "Portadas oficiales y Google Books ID indexados" }
+                ],
+                techs: ["Google Books API", "catalogo_libros.csv", "UTF-8-SIG", "Pandas DataFrame"]
+            }
+        ];
+
+        // ─────────────────────────────────────────────────────────────────────
+        // CONFIGURACIÓN DE ESCENA THREE.JS
+        // ─────────────────────────────────────────────────────────────────────
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x090D16, 0.018);
+
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(38, 28, 48);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.1;
+        container.appendChild(renderer.domElement);
+
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.maxPolarAngle = Math.PI / 2 + 0.1;
+        controls.minDistance = 15;
+        controls.maxDistance = 100;
+        controls.target.set(0, 0, 0);
+
+        // ── ILUMINACIÓN ──
+        const ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.7);
+        scene.add(ambientLight);
+
+        const dirLight = new THREE.DirectionalLight(0xFFFFFF, 1.2);
+        dirLight.position.set(20, 40, 20);
+        scene.add(dirLight);
+
+        const blueLight = new THREE.PointLight(0x3B82F6, 2, 80);
+        blueLight.position.set(-25, 20, 25);
+        scene.add(blueLight);
+
+        const purpleLight = new THREE.PointLight(0x8B5CF6, 2, 80);
+        purpleLight.position.set(25, -20, -25);
+        scene.add(purpleLight);
+
+        // ── GRILLA DE FONDO SUTIL ──
+        const gridHelper = new THREE.GridHelper(90, 45, 0x1E293B, 0x0F172A);
+        gridHelper.position.y = -18;
+        scene.add(gridHelper);
+
+        // ─────────────────────────────────────────────────────────────────────
+        // CREACIÓN DE LAS 4 CAPAS 3D FLOTANTES (SLABS)
+        // ─────────────────────────────────────────────────────────────────────
+        const layersGroup = new THREE.Group();
+        scene.add(layersGroup);
+
+        const layerMeshes = [];
+        const layerPositionsCollapsed = [7.5, 2.5, -2.5, -7.5];
+        const layerPositionsExploded  = [18, 6, -6, -18];
+        let isExploded = true;
+        let selectedLayerIndex = 0;
+
+        const layerWidth = 26;
+        const layerDepth = 18;
+        const layerThickness = 1.0;
+
+        LAYERS_DATA.forEach((data, index) => {
+            const slabGroup = new THREE.Group();
+            slabGroup.userData = { index: index, data: data };
+
+            // Geometría del bloque principal
+            const geometry = new THREE.BoxGeometry(layerWidth, layerThickness, layerDepth);
+            
+            // Material translúcido estilo vidrio templado de color
+            const material = new THREE.MeshPhysicalMaterial({
+                color: data.colorHex,
+                transparent: true,
+                opacity: 0.38,
+                roughness: 0.2,
+                metalness: 0.1,
+                transmission: 0.6,
+                ior: 1.4,
+                reflectivity: 0.5,
+                clearcoat: 0.8,
+            });
+
+            const mesh = new THREE.Mesh(geometry, material);
+            slabGroup.add(mesh);
+
+            // Borde brillante de alambre
+            const edges = new THREE.EdgesGeometry(geometry);
+            const lineMaterial = new THREE.LineBasicMaterial({
+                color: data.colorHex,
+                linewidth: 2,
+                transparent: true,
+                opacity: 0.95
+            });
+            const wireframe = new THREE.LineSegments(edges, lineMaterial);
+            slabGroup.add(wireframe);
+
+            // Nodos internos / Circuitos de datos en cada capa
+            const nodesGroup = new THREE.Group();
+            const nodeGeo = new THREE.SphereGeometry(0.35, 16, 16);
+            const nodeMat = new THREE.MeshBasicMaterial({ color: data.colorHex });
+
+            for (let x = -layerWidth/2 + 3; x <= layerWidth/2 - 3; x += 4) {
+                for (let z = -layerDepth/2 + 3; z <= layerDepth/2 - 3; z += 4) {
+                    if (Math.random() > 0.3) {
+                        const node = new THREE.Mesh(nodeGeo, nodeMat);
+                        node.position.set(x + (Math.random()-0.5), 0.6, z + (Math.random()-0.5));
+                        nodesGroup.add(node);
+                    }
+                }
+            }
+            slabGroup.add(nodesGroup);
+
+            // Posición vertical inicial (expandida)
+            slabGroup.position.y = layerPositionsExploded[index];
+
+            layersGroup.add(slabGroup);
+            layerMeshes.push(slabGroup);
+        });
+
+        // ── COLUMNAS DE INTERCONEXIÓN ENTRE CAPAS ──
+        const pillarMat = new THREE.LineDashedMaterial({
+            color: 0x475569,
+            dashSize: 0.6,
+            gapSize: 0.3,
+            transparent: true,
+            opacity: 0.4
+        });
+        const cornerPillars = [];
+        const corners = [
+            [-layerWidth/2 + 1, -layerDepth/2 + 1],
+            [layerWidth/2 - 1, -layerDepth/2 + 1],
+            [-layerWidth/2 + 1, layerDepth/2 - 1],
+            [layerWidth/2 - 1, layerDepth/2 - 1]
+        ];
+
+        corners.forEach(([cx, cz]) => {
+            const pGeo = new THREE.BufferGeometry().setFromPoints([
+                new THREE.Vector3(cx, -20, cz),
+                new THREE.Vector3(cx, 20, cz)
+            ]);
+            const pLine = new THREE.Line(pGeo, pillarMat);
+            pLine.computeLineDistances();
+            layersGroup.add(pLine);
+            cornerPillars.push(pLine);
+        });
+
+        // ─────────────────────────────────────────────────────────────────────
+        // SIMULACIÓN DE FLUJO DE PARTÍCULAS
+        // ─────────────────────────────────────────────────────────────────────
+        const particleCount = 60;
+        const particleGeo = new THREE.BufferGeometry();
+        const particlePos = new Float32Array(particleCount * 3);
+        const particleSpeeds = new Float32Array(particleCount);
+
+        for (let i = 0; i < particleCount; i++) {
+            particlePos[i * 3]     = (Math.random() - 0.5) * (layerWidth - 4);
+            particlePos[i * 3 + 1] = 18; // Inicia en la capa 1
+            particlePos[i * 3 + 2] = (Math.random() - 0.5) * (layerDepth - 4);
+            particleSpeeds[i]      = 0.15 + Math.random() * 0.25;
+        }
+
+        particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePos, 3));
+        const particleMat = new THREE.PointsMaterial({
+            color: 0x10B981,
+            size: 0.8,
+            transparent: true,
+            opacity: 0.0,
+            blending: THREE.AdditiveBlending
+        });
+        const particleSystem = new THREE.Points(particleGeo, particleMat);
+        layersGroup.add(particleSystem);
+
+        let isSimulating = false;
+
+        function simularFlujo() {
+            if (isSimulating) return;
+            isSimulating = true;
+
+            const banner = document.getElementById('sim-banner');
+            const simText = document.getElementById('sim-text');
+            banner.style.display = 'flex';
+
+            particleMat.opacity = 0.95;
+
+            // Etapas del flujo
+            const stages = [
+                { text: "Paso 1: Estudiante escribe 'Punteros en C' en la Capa 1 (Interfaz Streamlit)", targetLayer: 0 },
+                { text: "Paso 2: Capa 2 (Gemini 3.1) razona la necesidad y ejecuta la Tool 'buscar_libros()'", targetLayer: 1 },
+                { text: "Paso 3: Capa 3 (TF-IDF + Coseno) vectoriza términos y busca similitud angular", targetLayer: 2 },
+                { text: "Paso 4: Capa 4 (Dataset) devuelve los 2.521 libros indexados y rankea los mejores", targetLayer: 3 },
+                { text: "Paso 5: Capa 2 (Gemini) redacta la justificación pedagógica y analogía del puntero", targetLayer: 1 },
+                { text: "Paso 6: Capa 1 proyecta la respuesta + tarjeta con vista previa de Google Books", targetLayer: 0 }
+            ];
+
+            let stageIdx = 0;
+
+            function runStage() {
+                if (stageIdx >= stages.length) {
+                    simText.innerText = "¡Consulta procesada exitosamente en 18 milisegundos!";
+                    setTimeout(() => {
+                        banner.style.display = 'none';
+                        particleMat.opacity = 0.0;
+                        isSimulating = false;
+                    }, 2500);
+                    return;
+                }
+
+                simText.innerText = stages[stageIdx].text;
+                seleccionarCapa(stages[stageIdx].targetLayer);
+                stageIdx++;
+                setTimeout(runStage, 2200);
+            }
+
+            runStage();
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        // INTERACCIÓN Y CONTROL DE CAPAS
+        // ─────────────────────────────────────────────────────────────────────
+        function toggleExplode() {
+            isExploded = !isExploded;
+            const positions = isExploded ? layerPositionsExploded : layerPositionsCollapsed;
+
+            layerMeshes.forEach((mesh, idx) => {
+                new TWEEN.Tween(mesh.position)
+                    .to({ y: positions[idx] }, 900)
+                    .easing(TWEEN.Easing.Cubic.Out)
+                    .start();
+            });
+
+            document.getElementById('explode-text').innerText = isExploded ? "Colapsar Capas (Vista Compacta)" : "Separar Capas (3D Explode)";
+            document.getElementById('explode-icon').innerText = isExploded ? "⤡" : "⤢";
+        }
+
+        function seleccionarCapa(index) {
+            selectedLayerIndex = index;
+            const data = LAYERS_DATA[index];
+
+            // Actualizar botones de navegación inferior
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`nav-btn-${i}`).classList.toggle('active', i === index);
+            }
+
+            // Resaltar visualmente la capa 3D seleccionada
+            layerMeshes.forEach((meshGroup, idx) => {
+                const slabMesh = meshGroup.children[0];
+                const wireframe = meshGroup.children[1];
+
+                if (idx === index) {
+                    new TWEEN.Tween(slabMesh.material)
+                        .to({ opacity: 0.65 }, 300)
+                        .start();
+                    wireframe.material.opacity = 1.0;
+                    meshGroup.scale.set(1.04, 1.15, 1.04);
+                } else {
+                    new TWEEN.Tween(slabMesh.material)
+                        .to({ opacity: 0.28 }, 300)
+                        .start();
+                    wireframe.material.opacity = 0.45;
+                    meshGroup.scale.set(1.0, 1.0, 1.0);
+                }
+            });
+
+            // Actualizar panel lateral inspector
+            const inspector = document.getElementById('inspector');
+            const badge = document.getElementById('insp-badge');
+            const title = document.getElementById('insp-title');
+            const desc = document.getElementById('insp-desc');
+            const features = document.getElementById('insp-features');
+            const tags = document.getElementById('insp-tags');
+
+            badge.style.background = data.badgeBg;
+            badge.style.color = data.badgeColor;
+            badge.innerText = data.badge;
+
+            title.innerText = data.name;
+            desc.innerText = data.desc;
+
+            features.innerHTML = data.features.map(f => `
+                <div class="feature-item"><span class="icon">${f.icon}</span> ${f.text}</div>
+            `).join('');
+
+            tags.innerHTML = data.techs.map(t => `
+                <span class="tech-pill">${t}</span>
+            `).join('');
+
+            // Suave ajuste de cámara para enfocar la capa
+            const targetY = isExploded ? layerPositionsExploded[index] : layerPositionsCollapsed[index];
+            new TWEEN.Tween(controls.target)
+                .to({ y: targetY }, 600)
+                .easing(TWEEN.Easing.Cubic.Out)
+                .start();
+        }
+
+        // ── RAYCASTING: Clic sobre una capa 3D ──
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        window.addEventListener('click', (event) => {
+            // Evitar clics sobre elementos del HUD
+            if (event.target.closest('.hud-overlay *')) return;
+
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(layersGroup.children, true);
+
+            if (intersects.length > 0) {
+                let current = intersects[0].object;
+                while (current.parent && current.parent !== layersGroup) {
+                    current = current.parent;
+                }
+                if (current.userData && current.userData.index !== undefined) {
+                    seleccionarCapa(current.userData.index);
+                }
+            }
+        });
+
+        // ── RESIZE EVENT ──
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // ─────────────────────────────────────────────────────────────────────
+        // BUCLE DE ANIMACIÓN PRINCIPAL
+        // ─────────────────────────────────────────────────────────────────────
+        let clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+            TWEEN.update();
+
+            const time = clock.getElapsedTime();
+
+            // Rotación suave del grupo completo cuando no se interactúa
+            layersGroup.rotation.y = Math.sin(time * 0.15) * 0.08;
+
+            // Flotación sutil de cada capa
+            layerMeshes.forEach((mesh, i) => {
+                mesh.position.x = Math.sin(time * 0.8 + i) * 0.15;
+            });
+
+            // Animación de partículas si la simulación está activa
+            if (isSimulating) {
+                const positions = particleGeo.attributes.position.array;
+                for (let i = 0; i < particleCount; i++) {
+                    positions[i * 3 + 1] -= particleSpeeds[i];
+                    if (positions[i * 3 + 1] < -18) {
+                        positions[i * 3 + 1] = 18;
+                    }
+                }
+                particleGeo.attributes.position.needsUpdate = true;
+            }
+
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        animate();
+        seleccionarCapa(0); // Iniciar con Capa 1 seleccionada
+    </script>
+</body>
+</html>
