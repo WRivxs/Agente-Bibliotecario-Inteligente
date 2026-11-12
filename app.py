@@ -2,10 +2,7 @@
 Aplicacion Web: app.py
 Proyecto: Agente Bibliotecario Inteligente
 Tecnologia: Streamlit + Google Gemini + Scikit-Learn TF-IDF
-Caracteristicas:
-  - Chat conversacional con Agente IA (Gemini 3.1)
-  - Contenedor de chat con SCROLL INDEPENDIENTE (estilo ChatGPT/Claude Canvas)
-  - Panel Lateral Derecho 100% FIJO para lectura y vista previa en vivo
+Diseno: Interfaz Abierta y Limpia estilo ChatGPT & Google Gemini (Mobile-First y Responsive)
 """
 
 import os
@@ -35,84 +32,125 @@ st.set_page_config(
 )
 
 # ─────────────────────────────────────────────────────────────────────────────
-# ESTILOS VISUALES Y RESPONSIVIDAD (MOBILE & DESKTOP)
+# ESTILOS VISUALES (ESTILO CHATGPT / GEMINI - ABIERTO, SIN CAJAS)
 # ─────────────────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-    /* Ajustes generales */
+    /* Margen superior amplio para que el titulo NUNCA se corte */
     .block-container {
-        padding-top: 1.2rem !important;
-        padding-bottom: 1.2rem !important;
-        padding-left: 1rem !important;
-        padding-right: 1rem !important;
+        padding-top: 4.5rem !important;
+        padding-bottom: 6.5rem !important;
+        max-width: 1300px !important;
     }
-    .main-title {
-        font-size: 2rem;
-        font-weight: 800;
-        color: #1E3A8A;
-        margin-bottom: 0.1rem;
+    
+    /* Tipografia limpia estilo Google Gemini / ChatGPT */
+    .gemini-title {
+        font-size: 2.1rem;
+        font-weight: 700;
+        color: #1F2937;
+        margin-bottom: 0.2rem;
+        letter-spacing: -0.02em;
     }
-    .sub-title {
-        color: #475569;
-        font-size: 0.92rem;
-        margin-bottom: 0.8rem;
+    .gemini-subtitle {
+        color: #6B7280;
+        font-size: 0.96rem;
+        margin-bottom: 1.8rem;
     }
-    .badge-basico { background-color: #DEF7EC; color: #03543F; padding: 2px 7px; border-radius: 5px; font-size: 0.72rem; font-weight: 700; }
-    .badge-intermedio { background-color: #E1EFFE; color: #1E429F; padding: 2px 7px; border-radius: 5px; font-size: 0.72rem; font-weight: 700; }
-    .badge-avanzado { background-color: #FDE8E8; color: #9B1C1C; padding: 2px 7px; border-radius: 5px; font-size: 0.72rem; font-weight: 700; }
-    .score-badge { background-color: #FEF3C7; color: #92400E; padding: 2px 7px; border-radius: 5px; font-size: 0.72rem; font-weight: 700; }
 
-    /* Tarjeta de libro responsiva */
-    .book-card-container {
-        background: #FFFFFF;
-        border: 1px solid #E2E8F0;
-        border-radius: 12px;
-        padding: 12px;
-        margin-bottom: 8px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        display: flex;
-        gap: 14px;
-        align-items: flex-start;
+    /* Fondo limpio de los mensajes: sin marcos ni recuadros grises */
+    [data-testid="stChatMessage"] {
+        background-color: transparent !important;
+        border: none !important;
+        padding-top: 0.8rem !important;
+        padding-bottom: 0.8rem !important;
     }
-    .book-card-thumb {
-        width: 80px;
-        min-width: 80px;
-        height: 115px;
+    
+    /* Barra de entrada flotante fija en la parte inferior (estilo ChatGPT/Gemini) */
+    [data-testid="stChatInput"] {
+        border-radius: 28px !important;
+        border: 1px solid #D1D5DB !important;
+        background-color: #FFFFFF !important;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08) !important;
+        padding: 4px 8px !important;
+    }
+    [data-testid="stChatInput"] textarea {
+        font-size: 0.95rem !important;
+    }
+
+    /* Tarjetas de libros limpias (estilo cards de Gemini) */
+    .gemini-book-card {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        background: #FFFFFF;
+        border: 1px solid #E5E7EB;
+        border-radius: 12px;
+        padding: 12px 14px;
+        margin-top: 8px;
+        margin-bottom: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+    .gemini-book-thumb {
+        width: 72px;
+        min-width: 72px;
+        height: 105px;
         object-fit: cover;
         border-radius: 6px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.12);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
-    .book-card-body {
+    .gemini-book-content {
         flex: 1;
         min-width: 0;
     }
+    .badge-basico { background-color: #ECFDF5; color: #065F46; padding: 2px 7px; border-radius: 4px; font-size: 0.72rem; font-weight: 600; }
+    .badge-intermedio { background-color: #EFF6FF; color: #1E40AF; padding: 2px 7px; border-radius: 4px; font-size: 0.72rem; font-weight: 600; }
+    .badge-avanzado { background-color: #FEF2F2; color: #991B1B; padding: 2px 7px; border-radius: 4px; font-size: 0.72rem; font-weight: 600; }
+    .badge-score { background-color: #FFFBEB; color: #92400E; padding: 2px 7px; border-radius: 4px; font-size: 0.72rem; font-weight: 700; }
 
-    /* REGLAS DE RESPONSIVIDAD PARA CELULARES Y TABLETS (Pantallas < 900px) */
+    /* Panel lateral fijo y limpio para la vista previa */
+    .preview-sidecar {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 4.5rem;
+        max-height: calc(100vh - 6.5rem);
+        overflow-y: auto;
+        background: #FFFFFF;
+        border: 1px solid #E5E7EB;
+        border-radius: 14px;
+        padding: 16px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    }
+
+    /* Reglas para Celular / Pantallas < 900px */
     @media (max-width: 900px) {
-        .main-title {
-            font-size: 1.45rem !important;
+        .block-container {
+            padding-top: 4rem !important;
+            padding-left: 0.8rem !important;
+            padding-right: 0.8rem !important;
         }
-        .sub-title {
-            font-size: 0.84rem !important;
+        .gemini-title {
+            font-size: 1.55rem !important;
         }
-        /* En celular, las dos columnas se apilan verticalmente para no apretarse */
+        .gemini-subtitle {
+            font-size: 0.88rem !important;
+        }
         [data-testid="stHorizontalBlock"] {
             flex-direction: column !important;
-            gap: 1.2rem !important;
         }
         [data-testid="column"] {
             width: 100% !important;
             min-width: 100% !important;
         }
-        .book-card-container {
-            flex-direction: row;
-            gap: 10px;
-            padding: 10px;
+        .gemini-book-thumb {
+            width: 60px !important;
+            min-width: 60px !important;
+            height: 90px !important;
         }
-        .book-card-thumb {
-            width: 65px !important;
-            min-width: 65px !important;
-            height: 95px !important;
+        .preview-sidecar {
+            position: relative !important;
+            top: 0 !important;
+            max-height: none !important;
+            margin-top: 1.5rem !important;
         }
     }
 </style>
@@ -188,91 +226,134 @@ with st.sidebar:
                     st.rerun()
 
 # ─────────────────────────────────────────────────────────────────────────────
-# CABECERA
+# CABECERA PRINCIPAL (CON AMPLIO ESPACIO SUPERIOR)
 # ─────────────────────────────────────────────────────────────────────────────
-st.markdown('<div class="main-title">🤖 Agente Bibliotecario Inteligente</div>', unsafe_allow_html=True)
-st.markdown('<div class="sub-title">Recomendador Académico Explicable con Machine Learning (TF-IDF) + Google Gemini IA</div>', unsafe_allow_html=True)
+st.markdown('<div class="gemini-title">🤖 Agente Bibliotecario Inteligente</div>', unsafe_allow_html=True)
+st.markdown('<div class="gemini-subtitle">Recomendador Académico Explicable con Machine Learning (TF-IDF) + Google Gemini IA</div>', unsafe_allow_html=True)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# DISTRIBUCION DE PANTALLA: CHAT A LA IZQUIERDA Y PANEL FIJO A LA DERECHA
+# DISTRIBUCION DE PANTALLA: CHAT ABIERTO Y PANEL DERECHO OPCIONAL
 # ─────────────────────────────────────────────────────────────────────────────
 hay_libro = st.session_state.libro_seleccionado is not None
 
 if hay_libro:
-    col_chat, col_preview = st.columns([1.22, 1.0], gap="large")
+    col_chat, col_preview = st.columns([1.25, 1.0], gap="large")
 else:
     col_chat = st.container()
     col_preview = None
 
 # ─────────────────────────────────────────────────────────────────────────────
-# COLUMNA DEL CHAT (CON SCROLL INTERNO PROPIO)
+# CHAT ABIERTO Y NATURAL (SIN CAJAS NI RECUADROS GRISES)
 # ─────────────────────────────────────────────────────────────────────────────
 with col_chat:
-    # Contenedor con altura fija y scroll propio: la pagina principal NO se mueve
-    chat_box = st.container(height=650)
-    
-    with chat_box:
-        for idx_msg, msg in enumerate(st.session_state.messages):
-            with st.chat_message(msg["role"], avatar="🤖" if msg["role"] == "assistant" else "🎓"):
-                st.markdown(msg["content"])
-                
-                # Mostrar tarjetas si hay libros recomendados
-                if msg.get("libros"):
-                    st.markdown("##### 📚 Libros recomendados en nuestro catálogo:")
-                    for idx_lib, lib in enumerate(msg["libros"]):
-                        portada = lib.get("portada_url", "")
-                        if not portada or "http" not in portada:
-                            portada = "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=120&q=80"
-                        
-                        nivel = str(lib.get("nivel", "Intermedio")).capitalize()
-                        clase_badge = f"badge-{nivel.lower()}"
-                        score = lib.get("score", 0.0)
-                        
-                        st.markdown(f"""
-                        <div class="book-card-container">
-                            <img src="{portada}" class="book-card-thumb" onerror="this.src='https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=120&q=80'" />
-                            <div class="book-card-body">
-                                <div style="font-weight:700; color:#1E293B; font-size:0.96rem; margin-bottom:2px;">📖 {lib['titulo']}</div>
-                                <div style="font-size:0.82rem; color:#64748B; margin-bottom:5px;">✍️ {lib['autor']}</div>
-                                <div style="margin-bottom:6px;">
-                                    <span class="{clase_badge}">{nivel}</span> &nbsp;
-                                    <span style="font-size:0.74rem; color:#475569;">📁 {lib['materia']}</span> &nbsp;
-                                    <span class="score-badge">🎯 Afinidad: {score}%</span>
-                                </div>
-                                <div style="font-size:0.79rem; color:#334155; line-height:1.35;">{lib['descripcion'][:150]}...</div>
+    for idx_msg, msg in enumerate(st.session_state.messages):
+        with st.chat_message(msg["role"], avatar="🤖" if msg["role"] == "assistant" else "🎓"):
+            st.markdown(msg["content"])
+            
+            # Mostrar tarjetas limpias si el mensaje contiene libros recomendados
+            if msg.get("libros"):
+                st.markdown("##### 📚 Libros sugeridos de nuestro catálogo:")
+                for idx_lib, lib in enumerate(msg["libros"]):
+                    portada = lib.get("portada_url", "")
+                    if not portada or "http" not in portada:
+                        portada = "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=120&q=80"
+                    
+                    nivel = str(lib.get("nivel", "Intermedio")).capitalize()
+                    clase_badge = f"badge-{nivel.lower()}"
+                    score = lib.get("score", 0.0)
+                    
+                    st.markdown(f"""
+                    <div class="gemini-book-card">
+                        <img src="{portada}" class="gemini-book-thumb" onerror="this.src='https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=120&q=80'" />
+                        <div class="gemini-book-content">
+                            <div style="font-weight:700; color:#111827; font-size:0.97rem; margin-bottom:2px;">📖 {lib['titulo']}</div>
+                            <div style="font-size:0.82rem; color:#4B5563; margin-bottom:5px;">✍️ {lib['autor']}</div>
+                            <div style="margin-bottom:6px;">
+                                <span class="{clase_badge}">{nivel}</span> &nbsp;
+                                <span style="font-size:0.75rem; color:#4B5563;">📁 {lib['materia']}</span> &nbsp;
+                                <span class="badge-score">🎯 Afinidad: {score}%</span>
                             </div>
+                            <div style="font-size:0.8rem; color:#374151; line-height:1.35;">{lib['descripcion'][:150]}...</div>
                         </div>
-                        """, unsafe_allow_html=True)
-                        
-                        btn_key = f"btn_leer_{idx_msg}_{idx_lib}_{lib['id']}"
-                        if st.button(f"📖 Abrir lectura: {lib['titulo'][:35]}...", key=btn_key, type="primary", use_container_width=True):
-                            st.session_state.libro_seleccionado = lib
-                            st.rerun()
-                        st.markdown("<div style='margin-bottom:10px;'></div>", unsafe_allow_html=True)
-
-    # Entrada de texto del chat (anclada debajo del contenedor de chat)
-    if prompt := st.chat_input("Escribe tu duda aquí (ej. 'Recomiéndame libros para circuitos eléctricos')..."):
-        st.session_state.messages.append({"role": "user", "content": prompt, "libros": []})
-        st.rerun()
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
+                    btn_key = f"btn_leer_{idx_msg}_{idx_lib}_{lib['id']}"
+                    if st.button(f"📖 Abrir lectura: {lib['titulo'][:32]}...", key=btn_key, type="primary", use_container_width=True):
+                        st.session_state.libro_seleccionado = lib
+                        st.rerun()
+                    st.markdown("<div style='margin-bottom:8px;'></div>", unsafe_allow_html=True)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# PROCESAMIENTO DEL MENSAJE DEL USUARIO
+# PANEL LATERAL DE LECTURA (CANVAS / SIDECAR)
 # ─────────────────────────────────────────────────────────────────────────────
-if st.session_state.messages and st.session_state.messages[-1]["role"] == "user":
-    ultimo_prompt = st.session_state.messages[-1]["content"]
+if hay_libro and col_preview:
+    libro_sel = st.session_state.libro_seleccionado
+    book_id, embed_url, direct_url = extraer_info_libro(libro_sel)
+    
+    with col_preview:
+        st.markdown('<div class="preview-sidecar">', unsafe_allow_html=True)
+        
+        # Encabezado del lector
+        head_c1, head_c2 = st.columns([0.78, 0.22])
+        with head_c1:
+            st.markdown("### 📖 Lector y Vista Previa")
+        with head_c2:
+            if st.button("✖ Cerrar", key="btn_cerrar_preview", help="Cerrar panel de lectura"):
+                st.session_state.libro_seleccionado = None
+                st.rerun()
+        
+        # Ficha del libro seleccionado
+        st.markdown(f"#### **{libro_sel['titulo']}**")
+        st.caption(f"👤 Autor(es): **{libro_sel['autor']}** | 📁 Materia: **{libro_sel['materia']}**")
+        
+        # Boton directo externo
+        st.link_button("🔗 Abrir ficha en Google Books", direct_url, use_container_width=True)
+        
+        # Pestañas de Vista Previa y Sinopsis
+        tab_lector, tab_sinopsis = st.tabs(["📄 Vista Previa en Vivo", "📝 Sinopsis y Temas"])
+        
+        with tab_lector:
+            st.info("💡 Lector oficial de Google Books para navegar capítulos de muestra:")
+            components.iframe(embed_url, height=480, scrolling=True)
+            st.caption(f"ID del catálogo: `{book_id if book_id else 'Búsqueda directa'}`")
+            
+        with tab_sinopsis:
+            st.markdown("**Descripción temática y resumen curricular:**")
+            st.write(libro_sel.get("descripcion", "Sin sinopsis disponible."))
+            st.metric("Afinidad calculada por TF-IDF", f"{libro_sel.get('score', 0.0)}%")
+            
+            if st.button("🤖 Pedirle al Agente que me resuma este libro", use_container_width=True):
+                st.session_state.messages.append({
+                    "role": "user",
+                    "content": f"Por favor explícame en detalle qué temas trata el libro '{libro_sel['titulo']}' de {libro_sel['autor']} y cómo me ayudará a estudiar.",
+                    "libros": []
+                })
+                st.rerun()
+                
+        st.markdown('</div>', unsafe_allow_html=True)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ENTRADA DE TEXTO FLOTANTE FIJA AL FONDO (ESTILO CHATGPT / GEMINI)
+# ─────────────────────────────────────────────────────────────────────────────
+if prompt := st.chat_input("Escribe tu duda aquí (ej. 'Recomiéndame libros para circuitos eléctricos')..."):
+    st.session_state.messages.append({"role": "user", "content": prompt, "libros": []})
     
     with col_chat:
+        with st.chat_message("user", avatar="🎓"):
+            st.markdown(prompt)
+            
         with st.chat_message("assistant", avatar="🤖"):
             with st.spinner("El Agente Bibliotecario está consultando el catálogo y analizando la mejor recomendación..."):
                 try:
                     if st.session_state.agente:
-                        respuesta, libros = st.session_state.agente.enviar_mensaje(ultimo_prompt)
+                        respuesta, libros = st.session_state.agente.enviar_mensaje(prompt)
                     else:
-                        libros = recomendador.consultar_catalogo(tema=ultimo_prompt, top_k=3)
+                        libros = recomendador.consultar_catalogo(tema=prompt, top_k=3)
                         respuesta = "He consultado nuestro catálogo con el algoritmo TF-IDF. Aquí tienes los libros más pertinentes:"
                     
-                    if not libros and any(k in ultimo_prompt.lower() for k in ["libro", "recomiend", "aprender", "estudiar", "circuito", "puntero", "calculo", "c", "java", "python", "base de datos"]):
-                        libros = recomendador.consultar_catalogo(tema=ultimo_prompt, top_k=3)
+                    if not libros and any(k in prompt.lower() for k in ["libro", "recomiend", "aprender", "estudiar", "circuito", "puntero", "calculo", "c", "java", "python", "base de datos", "cuantica"]):
+                        libros = recomendador.consultar_catalogo(tema=prompt, top_k=3)
                     
                     if libros:
                         st.session_state.libro_seleccionado = libros[0]
@@ -285,7 +366,7 @@ if st.session_state.messages and st.session_state.messages[-1]["role"] == "user"
                     st.rerun()
                     
                 except Exception as e:
-                    libros = recomendador.consultar_catalogo(tema=ultimo_prompt, top_k=3)
+                    libros = recomendador.consultar_catalogo(tema=prompt, top_k=3)
                     fallback_resp = "He consultado directamente nuestro catálogo de la biblioteca universitaria con **TF-IDF y Similitud del Coseno**. Aquí tienes las recomendaciones:"
                     if libros:
                         st.session_state.libro_seleccionado = libros[0]
@@ -293,53 +374,5 @@ if st.session_state.messages and st.session_state.messages[-1]["role"] == "user"
                         "role": "assistant",
                         "content": fallback_resp,
                         "libros": libros
-                    })
-                    st.rerun()
-
-# ─────────────────────────────────────────────────────────────────────────────
-# COLUMNA DERECHA: PANEL FIJO DE LECTURA Y VISTA PREVIA (CANVAS / SIDECAR)
-# ─────────────────────────────────────────────────────────────────────────────
-if hay_libro and col_preview:
-    libro_sel = st.session_state.libro_seleccionado
-    book_id, embed_url, direct_url = extraer_info_libro(libro_sel)
-    
-    with col_preview:
-        preview_box = st.container(height=650)
-        
-        with preview_box:
-            # Encabezado del lector
-            head_c1, head_c2 = st.columns([0.75, 0.25])
-            with head_c1:
-                st.markdown("### 📖 Lector y Vista Previa")
-            with head_c2:
-                if st.button("✖ Cerrar", key="btn_cerrar_preview", help="Cerrar panel"):
-                    st.session_state.libro_seleccionado = None
-                    st.rerun()
-            
-            # Ficha del libro seleccionado
-            st.markdown(f"#### **{libro_sel['titulo']}**")
-            st.caption(f"👤 Autor(es): **{libro_sel['autor']}** | 📁 Materia: **{libro_sel['materia']}**")
-            
-            # Boton directo externo
-            st.link_button("🔗 Abrir libro en Google Books", direct_url, use_container_width=True)
-            
-            # Pestañas de Vista Previa y Sinopsis
-            tab_lector, tab_sinopsis = st.tabs(["📄 Vista Previa en Vivo", "📝 Sinopsis y Temas"])
-            
-            with tab_lector:
-                st.info("💡 A continuación se carga el lector oficial de Google Books:")
-                components.iframe(embed_url, height=450, scrolling=True)
-                st.caption(f"ID del catálogo: `{book_id if book_id else 'Búsqueda directa'}`")
-                
-            with tab_sinopsis:
-                st.markdown("**Descripción temática y resumen curricular:**")
-                st.write(libro_sel.get("descripcion", "Sin sinopsis disponible."))
-                st.metric("Afinidad calculada por TF-IDF", f"{libro_sel.get('score', 0.0)}%")
-                
-                if st.button("🤖 Pedirle al Agente que me resuma este libro", use_container_width=True):
-                    st.session_state.messages.append({
-                        "role": "user",
-                        "content": f"Por favor explícame en detalle qué temas trata el libro '{libro_sel['titulo']}' de {libro_sel['autor']} y cómo me ayudará a estudiar.",
-                        "libros": []
                     })
                     st.rerun()
