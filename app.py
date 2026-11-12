@@ -35,17 +35,19 @@ st.set_page_config(
 )
 
 # ─────────────────────────────────────────────────────────────────────────────
-# ESTILOS VISUALES
+# ESTILOS VISUALES Y RESPONSIVIDAD (MOBILE & DESKTOP)
 # ─────────────────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-    /* Evitar que la pagina principal haga scroll innecesario */
+    /* Ajustes generales */
     .block-container {
-        padding-top: 1.5rem !important;
-        padding-bottom: 1.5rem !important;
+        padding-top: 1.2rem !important;
+        padding-bottom: 1.2rem !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
     }
     .main-title {
-        font-size: 1.9rem;
+        font-size: 2rem;
         font-weight: 800;
         color: #1E3A8A;
         margin-bottom: 0.1rem;
@@ -59,6 +61,60 @@ st.markdown("""
     .badge-intermedio { background-color: #E1EFFE; color: #1E429F; padding: 2px 7px; border-radius: 5px; font-size: 0.72rem; font-weight: 700; }
     .badge-avanzado { background-color: #FDE8E8; color: #9B1C1C; padding: 2px 7px; border-radius: 5px; font-size: 0.72rem; font-weight: 700; }
     .score-badge { background-color: #FEF3C7; color: #92400E; padding: 2px 7px; border-radius: 5px; font-size: 0.72rem; font-weight: 700; }
+
+    /* Tarjeta de libro responsiva */
+    .book-card-container {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 12px;
+        padding: 12px;
+        margin-bottom: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+    }
+    .book-card-thumb {
+        width: 80px;
+        min-width: 80px;
+        height: 115px;
+        object-fit: cover;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.12);
+    }
+    .book-card-body {
+        flex: 1;
+        min-width: 0;
+    }
+
+    /* REGLAS DE RESPONSIVIDAD PARA CELULARES Y TABLETS (Pantallas < 900px) */
+    @media (max-width: 900px) {
+        .main-title {
+            font-size: 1.45rem !important;
+        }
+        .sub-title {
+            font-size: 0.84rem !important;
+        }
+        /* En celular, las dos columnas se apilan verticalmente para no apretarse */
+        [data-testid="stHorizontalBlock"] {
+            flex-direction: column !important;
+            gap: 1.2rem !important;
+        }
+        [data-testid="column"] {
+            width: 100% !important;
+            min-width: 100% !important;
+        }
+        .book-card-container {
+            flex-direction: row;
+            gap: 10px;
+            padding: 10px;
+        }
+        .book-card-thumb {
+            width: 65px !important;
+            min-width: 65px !important;
+            height: 95px !important;
+        }
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -172,24 +228,27 @@ with col_chat:
                         clase_badge = f"badge-{nivel.lower()}"
                         score = lib.get("score", 0.0)
                         
-                        card_c1, card_c2 = st.columns([0.22, 0.78])
-                        with card_c1:
-                            st.image(portada, use_container_width=True)
-                        with card_c2:
-                            st.markdown(f"**{lib['titulo']}**")
-                            st.caption(f"✍️ {lib['autor']}")
-                            st.markdown(f"""
-                            <span class="{clase_badge}">{nivel}</span> &nbsp;
-                            <span style="font-size: 0.75rem; color: #475569;">📁 {lib['materia']}</span> &nbsp;
-                            <span class="score-badge">🎯 Afinidad: {score}%</span>
-                            """, unsafe_allow_html=True)
-                            st.markdown(f"<div style='font-size:0.8rem; color:#475569; margin-top:3px;'>{lib['descripcion'][:140]}...</div>", unsafe_allow_html=True)
-                            
-                            btn_key = f"btn_leer_{idx_msg}_{idx_lib}_{lib['id']}"
-                            if st.button("📖 Abrir vista previa y lectura", key=btn_key, type="primary"):
-                                st.session_state.libro_seleccionado = lib
-                                st.rerun()
-                        st.divider()
+                        st.markdown(f"""
+                        <div class="book-card-container">
+                            <img src="{portada}" class="book-card-thumb" onerror="this.src='https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=120&q=80'" />
+                            <div class="book-card-body">
+                                <div style="font-weight:700; color:#1E293B; font-size:0.96rem; margin-bottom:2px;">📖 {lib['titulo']}</div>
+                                <div style="font-size:0.82rem; color:#64748B; margin-bottom:5px;">✍️ {lib['autor']}</div>
+                                <div style="margin-bottom:6px;">
+                                    <span class="{clase_badge}">{nivel}</span> &nbsp;
+                                    <span style="font-size:0.74rem; color:#475569;">📁 {lib['materia']}</span> &nbsp;
+                                    <span class="score-badge">🎯 Afinidad: {score}%</span>
+                                </div>
+                                <div style="font-size:0.79rem; color:#334155; line-height:1.35;">{lib['descripcion'][:150]}...</div>
+                            </div>
+                        </div>
+                        """, unsafe_allow_html=True)
+                        
+                        btn_key = f"btn_leer_{idx_msg}_{idx_lib}_{lib['id']}"
+                        if st.button(f"📖 Abrir lectura: {lib['titulo'][:35]}...", key=btn_key, type="primary", use_container_width=True):
+                            st.session_state.libro_seleccionado = lib
+                            st.rerun()
+                        st.markdown("<div style='margin-bottom:10px;'></div>", unsafe_allow_html=True)
 
     # Entrada de texto del chat (anclada debajo del contenedor de chat)
     if prompt := st.chat_input("Escribe tu duda aquí (ej. 'Recomiéndame libros para circuitos eléctricos')..."):
