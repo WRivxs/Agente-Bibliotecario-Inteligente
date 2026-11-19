@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arquitectura 3D Realista por Capas - Agente Bibliotecario</title>
+    <title>Pipeline 3D Horizontal por Capas - Agente Bibliotecario Inteligente</title>
     <!-- Three.js, OrbitControls, TWEEN & Font -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -12,13 +12,13 @@
 
     <style>
         :root {
-            --bg-color: #050811;
-            --layer-1-color: #0088FF; /* Streamlit UI - Azul Neón Eléctrico */
+            --bg-color: #040711;
+            --layer-1-color: #0088FF; /* Streamlit UI - Azul Neón */
             --layer-2-color: #A855F7; /* Gemini Agent - Púrpura Neón */
             --layer-3-color: #10B981; /* Motor TF-IDF - Verde Esmeralda */
-            --layer-4-color: #F59E0B; /* Dataset 2.521 Libros - Oro Ámbar */
-            --glass-bg: rgba(10, 16, 32, 0.85);
-            --border-glow: rgba(255, 255, 255, 0.15);
+            --layer-4-color: #F59E0B; /* Dataset 2.521 Libros - Dorado Ámbar */
+            --glass-bg: rgba(9, 14, 28, 0.85);
+            --border-glow: rgba(255, 255, 255, 0.12);
         }
 
         * {
@@ -29,7 +29,7 @@
         }
 
         body {
-            background: radial-gradient(circle at 50% 30%, #0d1527 0%, #050811 100%);
+            background: radial-gradient(circle at 50% 40%, #0d1527 0%, #030611 100%);
             color: #F8FAFC;
             font-family: 'Plus Jakarta Sans', sans-serif;
             overflow: hidden;
@@ -76,7 +76,7 @@
             background: var(--glass-bg);
             backdrop-filter: blur(20px);
             border: 1px solid var(--border-glow);
-            padding: 18px 24px;
+            padding: 16px 22px;
             border-radius: 18px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.5);
         }
@@ -85,35 +85,35 @@
             display: inline-block;
             background: linear-gradient(135deg, rgba(0, 136, 255, 0.25), rgba(168, 85, 247, 0.25));
             color: #60A5FA;
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.12em;
             padding: 4px 12px;
             border-radius: 20px;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             border: 1px solid rgba(96, 165, 250, 0.4);
         }
 
         h1 {
-            font-size: 1.65rem;
+            font-size: 1.55rem;
             font-weight: 800;
             letter-spacing: -0.02em;
             background: linear-gradient(135deg, #FFFFFF 0%, #94A3B8 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
         }
 
         .brand-subtitle {
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             color: #94A3B8;
         }
 
         /* Controles Superiores */
         .top-actions {
             display: flex;
-            gap: 12px;
+            gap: 10px;
         }
 
         .btn {
@@ -122,9 +122,9 @@
             border: 1px solid var(--border-glow);
             color: #F8FAFC;
             font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             font-weight: 600;
-            padding: 10px 18px;
+            padding: 10px 16px;
             border-radius: 12px;
             cursor: pointer;
             transition: all 0.25s ease;
@@ -132,7 +132,7 @@
             align-items: center;
             gap: 8px;
             text-decoration: none;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
         }
 
         .btn:hover {
@@ -157,15 +157,15 @@
             position: absolute;
             right: 32px;
             top: 105px;
-            width: 390px;
+            width: 380px;
             background: var(--glass-bg);
             backdrop-filter: blur(24px);
             border: 1px solid var(--border-glow);
             border-radius: 20px;
-            padding: 24px;
+            padding: 22px;
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
             transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-            max-height: calc(100vh - 170px);
+            max-height: calc(100vh - 175px);
             overflow-y: auto;
         }
 
@@ -175,47 +175,47 @@
             gap: 6px;
             padding: 4px 12px;
             border-radius: 20px;
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.06em;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
         .inspector-title {
-            font-size: 1.35rem;
+            font-size: 1.25rem;
             font-weight: 800;
             margin-bottom: 8px;
             line-height: 1.25;
         }
 
         .inspector-desc {
-            font-size: 0.88rem;
+            font-size: 0.85rem;
             color: #94A3B8;
             line-height: 1.5;
-            margin-bottom: 18px;
+            margin-bottom: 16px;
         }
 
         .features-list {
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            margin-bottom: 18px;
+            gap: 8px;
+            margin-bottom: 16px;
         }
 
         .feature-item {
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 10px 14px;
+            padding: 9px 12px;
             border-radius: 10px;
-            font-size: 0.83rem;
+            font-size: 0.81rem;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
         .feature-item span.icon {
-            font-size: 1.15rem;
+            font-size: 1.1rem;
         }
 
         .tech-tags {
@@ -228,18 +228,18 @@
             background: rgba(148, 163, 184, 0.12);
             color: #E2E8F0;
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.74rem;
-            padding: 4px 9px;
+            font-size: 0.72rem;
+            padding: 3px 8px;
             border-radius: 6px;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Footer con Selector Rápido de Capas */
+        /* Footer con Selector de Capas Horizontal */
         .footer-nav {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             background: var(--glass-bg);
             backdrop-filter: blur(20px);
             border: 1px solid var(--border-glow);
@@ -253,9 +253,9 @@
             background: transparent;
             border: 1px solid transparent;
             color: #94A3B8;
-            padding: 8px 16px;
+            padding: 8px 14px;
             border-radius: 20px;
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.2s;
@@ -292,9 +292,9 @@
             background: rgba(16, 185, 129, 0.2);
             border: 1.5px solid #10B981;
             color: #6EE7B7;
-            padding: 9px 24px;
+            padding: 8px 22px;
             border-radius: 30px;
-            font-size: 0.88rem;
+            font-size: 0.86rem;
             font-weight: 700;
             display: none;
             align-items: center;
@@ -313,10 +313,10 @@
             left: 32px;
             bottom: 32px;
             color: #64748B;
-            font-size: 0.78rem;
+            font-size: 0.76rem;
             font-family: 'JetBrains Mono', monospace;
             background: rgba(10, 16, 32, 0.7);
-            padding: 8px 14px;
+            padding: 8px 12px;
             border-radius: 8px;
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
@@ -324,7 +324,7 @@
         @media (max-width: 900px) {
             .layer-inspector { display: none; }
             .hud-overlay { padding: 16px; }
-            h1 { font-size: 1.25rem; }
+            h1 { font-size: 1.2rem; }
         }
     </style>
 </head>
@@ -336,27 +336,27 @@
         <!-- Header -->
         <div class="header">
             <div class="brand-title">
-                <div class="brand-badge">Sistemas Inteligentes • Arquitectura de Software</div>
-                <h1>Agente Bibliotecario Inteligente</h1>
-                <div class="brand-subtitle">Visualización Tridimensional de Capas y Flujo de Inferencia</div>
+                <div class="brand-badge">Sistemas Inteligentes • Pipeline Horizontal</div>
+                <h1>Arquitectura del Agente Bibliotecario</h1>
+                <div class="brand-subtitle">Visualización 3D en Fila Horizontal con Paneles Verticales Erguidos</div>
             </div>
 
             <div class="top-actions">
-                <button class="btn" id="btn-explode" onclick="toggleExplode()">
-                    <span id="explode-icon">⤢</span> <span id="explode-text">Separar Capas (3D Explode)</span>
+                <button class="btn" id="btn-view-all" onclick="vistaPanoramica()">
+                    🔭 Vista Panorámica (Todo el Pipeline)
                 </button>
-                <button class="btn btn-primary" onclick="simularFlujo()">
-                    ⚡ Simular Consulta Real ("Punteros en C")
+                <button class="btn btn-primary" onclick="simularFlujoHorizontal()">
+                    ⚡ Simular Flujo Horizontal ("Punteros en C")
                 </button>
                 <a href="https://agente-bibliotecario-inteligente-wrivas.streamlit.app/" target="_blank" class="btn">
-                    🌐 Ver App en Producción ↗
+                    🌐 App en Producción ↗
                 </a>
             </div>
         </div>
 
         <!-- Banner de flujo -->
         <div class="simulation-banner" id="sim-banner">
-            <span>●</span> <span id="sim-text">Flujo de datos activo...</span>
+            <span>●</span> <span id="sim-text">Flujo de datos horizontal activo...</span>
         </div>
 
         <!-- Panel Lateral Inspector -->
@@ -364,7 +364,7 @@
             <div class="inspector-badge" id="insp-badge" style="background: rgba(0, 136, 255, 0.25); color: #60A5FA;">
                 Capa 1 • Frontend & UX
             </div>
-            <div class="inspector-title" id="insp-title">Capa 1: Interfaz de Usuario y Lector</div>
+            <div class="inspector-title" id="insp-title">Capa 1: Interfaz Web y Canvas Lector</div>
             <div class="inspector-desc" id="insp-desc">
                 Interfaz web conversacional construida en Streamlit con diseño abierto estilo ChatGPT/Gemini y panel Canvas de lectura con Google Books integrado.
             </div>
@@ -385,29 +385,32 @@
 
         <!-- Instrucción de cámara -->
         <div class="camera-tip">
-            🖱️ Clic izquierdo y arrastra para rotar • Clic derecho para desplazar • Scroll para zoom
+            🖱️ Clic izquierdo y arrastra para rotar en 3D • Scroll para zoom • Clic en cualquier panel vertical
         </div>
 
-        <!-- Footer Selector de Capas -->
+        <!-- Footer Selector de Capas Horizontal -->
         <div class="footer-nav">
-            <button class="layer-btn active" onclick="seleccionarCapa(0)" id="nav-btn-0">
-                <span class="dot" style="background: var(--layer-1-color); color: var(--layer-1-color);"></span> Capa 1: Interfaz Streamlit
+            <button class="layer-btn active" onclick="enfocarCapa(0)" id="nav-btn-0">
+                <span class="dot" style="background: var(--layer-1-color); color: var(--layer-1-color);"></span> 1. Interfaz Streamlit
             </button>
-            <button class="layer-btn" onclick="seleccionarCapa(1)" id="nav-btn-1">
-                <span class="dot" style="background: var(--layer-2-color); color: var(--layer-2-color);"></span> Capa 2: Agente Gemini 3.1
+            <span style="color: #475569;">➔</span>
+            <button class="layer-btn" onclick="enfocarCapa(1)" id="nav-btn-1">
+                <span class="dot" style="background: var(--layer-2-color); color: var(--layer-2-color);"></span> 2. Agente Gemini 3.1
             </button>
-            <button class="layer-btn" onclick="seleccionarCapa(2)" id="nav-btn-2">
-                <span class="dot" style="background: var(--layer-3-color); color: var(--layer-3-color);"></span> Capa 3: Motor TF-IDF
+            <span style="color: #475569;">➔</span>
+            <button class="layer-btn" onclick="enfocarCapa(2)" id="nav-btn-2">
+                <span class="dot" style="background: var(--layer-3-color); color: var(--layer-3-color);"></span> 3. Motor TF-IDF
             </button>
-            <button class="layer-btn" onclick="seleccionarCapa(3)" id="nav-btn-3">
-                <span class="dot" style="background: var(--layer-4-color); color: var(--layer-4-color);"></span> Capa 4: Catálogo (2.521 Libros)
+            <span style="color: #475569;">➔</span>
+            <button class="layer-btn" onclick="enfocarCapa(3)" id="nav-btn-3">
+                <span class="dot" style="background: var(--layer-4-color); color: var(--layer-4-color);"></span> 4. Catálogo (2.521 Libros)
             </button>
         </div>
     </div>
 
     <script>
         // ─────────────────────────────────────────────────────────────────────
-        // DEFINICIÓN DETALLADA DE LAS 4 CAPAS DEL PROYECTO
+        // DATOS DE LAS 4 CAPAS DEL PIPELINE
         // ─────────────────────────────────────────────────────────────────────
         const LAYERS_DATA = [
             {
@@ -418,9 +421,10 @@
                 badgeColor: "#60A5FA",
                 colorHex: 0x0088FF,
                 glowHex: 0x38BDF8,
+                posX: -28.5, // Extremo Izquierdo
                 desc: "Experiencia conversacional fluida sin marcos cerrados (idéntica a ChatGPT y Gemini). Integra el panel interactivo Split-Screen / Canvas con el lector de páginas oficial de Google Books.",
                 features: [
-                    { icon: "💬", text: "Chat abierto con barra de texto flotante" },
+                    { icon: "💬", text: "Chat abierto con barra de texto flotante fija" },
                     { icon: "📖", text: "Lector oficial de páginas y capítulos incrustado" },
                     { icon: "🎯", text: "Tarjetas interactivas con score de afinidad TF-IDF" },
                     { icon: "📱", text: "Diseño responsivo para teléfonos y computadores" }
@@ -435,6 +439,7 @@
                 badgeColor: "#C084FC",
                 colorHex: 0xA855F7,
                 glowHex: 0xE879F9,
+                posX: -9.5, // Centro Izquierdo
                 desc: "Cerebro conversacional sustentado en Google Gemini 3.1 Flash Lite. Mantiene memoria de contexto (Multi-turn), indaga las debilidades del estudiante y activa de forma autónoma la herramienta 'buscar_libros()'.",
                 features: [
                     { icon: "🧠", text: "Modelo Gemini 3.1 con System Prompt pedagógico" },
@@ -452,6 +457,7 @@
                 badgeColor: "#34D399",
                 colorHex: 0x10B981,
                 glowHex: 0x6EE7B7,
+                posX: 9.5, // Centro Derecho
                 desc: "Motor analítico de filtrado basado en contenido. Vectoriza la consulta del alumno sobre un vocabulario de 25.000 dimensiones y calcula la Similitud del Coseno angular en menos de 20 milisegundos.",
                 features: [
                     { icon: "📐", text: "Modelo de Espacio Vectorial (Vector Space Model - VSM)" },
@@ -469,6 +475,7 @@
                 badgeColor: "#FBBF24",
                 colorHex: 0xF59E0B,
                 glowHex: 0xFCD34D,
+                posX: 28.5, // Extremo Derecho
                 desc: "Catálogo estructurado de 2.521 libros académicos universitarios reales, extraídos mediante Google Books API a lo largo de 53 áreas del conocimiento universitario debidamente clasificadas y etiquetadas.",
                 features: [
                     { icon: "📚", text: "2.521 libros universitarios únicos y verificados" },
@@ -485,430 +492,531 @@
         // ─────────────────────────────────────────────────────────────────────
         const container = document.getElementById('canvas-container');
         const scene = new THREE.Scene();
-        scene.fog = new THREE.FogExp2(0x050811, 0.015);
+        scene.fog = new THREE.FogExp2(0x040711, 0.012);
 
         const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(40, 26, 46);
+        // Vista inicial panorámica de frente y con perspectiva
+        camera.position.set(0, 16, 68);
 
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 1.35;
+        renderer.toneMappingExposure = 1.3;
         container.appendChild(renderer.domElement);
 
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
         controls.dampingFactor = 0.05;
-        controls.maxPolarAngle = Math.PI / 2 + 0.08;
+        controls.maxPolarAngle = Math.PI / 2 + 0.05;
         controls.minDistance = 15;
-        controls.maxDistance = 95;
+        controls.maxDistance = 120;
         controls.target.set(0, 0, 0);
 
-        // ── LUCES INTENSAS Y VIBRANTES ──
-        const ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.9);
+        // ── ILUMINACIÓN POTENTE Y CONTRASTADA ──
+        const ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.85);
         scene.add(ambientLight);
 
-        const mainLight = new THREE.DirectionalLight(0xFFFFFF, 1.8);
-        mainLight.position.set(25, 45, 25);
+        const mainLight = new THREE.DirectionalLight(0xFFFFFF, 1.6);
+        mainLight.position.set(0, 35, 30);
         scene.add(mainLight);
 
-        // Luces puntuales de colores para acentuar el brillo
-        const lightBlue = new THREE.PointLight(0x0088FF, 3.5, 60);
-        lightBlue.position.set(-20, 25, 20);
+        // Luces puntuales de colores sobre cada posición horizontal
+        const lightBlue = new THREE.PointLight(0x0088FF, 3.5, 50);
+        lightBlue.position.set(-28.5, 12, 10);
         scene.add(lightBlue);
 
-        const lightPurple = new THREE.PointLight(0xA855F7, 3.5, 60);
-        lightPurple.position.set(20, 10, -20);
+        const lightPurple = new THREE.PointLight(0xA855F7, 3.5, 50);
+        lightPurple.position.set(-9.5, 12, 10);
         scene.add(lightPurple);
 
-        const lightGreen = new THREE.PointLight(0x10B981, 3.5, 60);
-        lightGreen.position.set(-20, -10, -20);
+        const lightGreen = new THREE.PointLight(0x10B981, 3.5, 50);
+        lightGreen.position.set(9.5, 12, 10);
         scene.add(lightGreen);
 
-        const lightAmber = new THREE.PointLight(0xF59E0B, 3.5, 60);
-        lightAmber.position.set(20, -25, 20);
+        const lightAmber = new THREE.PointLight(0xF59E0B, 3.5, 50);
+        lightAmber.position.set(28.5, 12, 10);
         scene.add(lightAmber);
 
-        // Grilla de piso tecnológica
-        const grid = new THREE.GridHelper(90, 45, 0x1E293B, 0x0A101D);
-        grid.position.y = -26;
+        // Piso tecnológico
+        const grid = new THREE.GridHelper(120, 40, 0x1E293B, 0x090F1E);
+        grid.position.y = -12;
         scene.add(grid);
 
         // ─────────────────────────────────────────────────────────────────────
-        // TEXTURAS PROCEDURALES PARA HACER CADA CAPA VISUALMENTE REALISTA
+        // TEXTURAS VERTICALES PROCEDURALES (PANELES VERTICALES ERGUIDOS)
         // ─────────────────────────────────────────────────────────────────────
-        function createTextTexture(title, subtitle, colorHexStr) {
+        function createVerticalTexture(layerNum, title, techSub, colorHexStr) {
             const canvas = document.createElement('canvas');
-            canvas.width = 1024;
-            canvas.height = 700;
+            canvas.width = 600;
+            canvas.height = 860;
             const ctx = canvas.getContext('2d');
 
-            // Fondo sutil con degradado
-            const grad = ctx.createLinearGradient(0, 0, 1024, 700);
+            // Fondo futurista
+            const grad = ctx.createLinearGradient(0, 0, 600, 860);
             grad.addColorStop(0, '#0F172A');
             grad.addColorStop(1, '#020617');
             ctx.fillStyle = grad;
-            ctx.fillRect(0, 0, 1024, 700);
+            ctx.fillRect(0, 0, 600, 860);
 
-            // Borde brillante
+            // Marco neón
             ctx.strokeStyle = colorHexStr;
             ctx.lineWidth = 14;
-            ctx.strokeRect(10, 10, 1004, 680);
+            ctx.strokeRect(8, 8, 584, 844);
 
-            // Encabezado
+            // Badge Capa
             ctx.fillStyle = colorHexStr;
-            ctx.font = 'bold 50px "Plus Jakarta Sans", sans-serif';
-            ctx.fillText(title, 50, 100);
-
-            ctx.fillStyle = '#94A3B8';
-            ctx.font = '30px "JetBrains Mono", monospace';
-            ctx.fillText(subtitle, 50, 150);
-
-            // Línea separadora
-            ctx.strokeStyle = 'rgba(255,255,255,0.15)';
-            ctx.lineWidth = 3;
             ctx.beginPath();
-            ctx.moveTo(50, 180);
-            ctx.lineTo(974, 180);
+            ctx.roundRect(40, 40, 180, 42, 10);
+            ctx.fill();
+            ctx.fillStyle = '#050811';
+            ctx.font = 'bold 22px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText(layerNum, 58, 69);
+
+            // Título
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = 'bold 36px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText(title, 40, 130);
+
+            // Subtítulo Tecnológico
+            ctx.fillStyle = '#94A3B8';
+            ctx.font = '22px "JetBrains Mono", monospace';
+            ctx.fillText(techSub, 40, 168);
+
+            // Divisor
+            ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(40, 190);
+            ctx.lineTo(560, 190);
             ctx.stroke();
 
             return canvas;
         }
 
-        // ── Textura para Capa 1: Interfaz Streamlit (Chat UI + Lector) ──
-        function getTextureCapa1() {
-            const canvas = createTextTexture("CAPA 1: INTERFAZ & CANVAS LECTOR", "Streamlit 1.35+ • Google Books Embed", "#0088FF");
+        // ── Textura Capa 1: Vertical Streamlit ──
+        function getTextureVerticalCapa1() {
+            const canvas = createVerticalTexture("CAPA 1", "INTERFAZ STREAMLIT", "UX Conversacional & Lector", "#0088FF");
             const ctx = canvas.getContext('2d');
 
-            // Burbuja de usuario
+            // Burbuja Estudiante
             ctx.fillStyle = '#1E3A8A';
             ctx.beginPath();
-            ctx.roundRect(400, 220, 560, 90, 16);
+            ctx.roundRect(140, 220, 420, 95, 14);
             ctx.fill();
             ctx.fillStyle = '#FFFFFF';
-            ctx.font = '28px "Plus Jakarta Sans", sans-serif';
-            ctx.fillText("Estudiante: Necesito libros para aprender punteros en C...", 430, 275);
+            ctx.font = '22px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText("Estudiante:", 160, 255);
+            ctx.font = '20px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText("Necesito libros para punteros en C...", 160, 290);
 
-            // Burbuja del Agente
+            // Burbuja Agente
             ctx.fillStyle = '#1E293B';
             ctx.beginPath();
-            ctx.roundRect(60, 340, 560, 140, 16);
+            ctx.roundRect(40, 340, 520, 140, 14);
             ctx.fill();
             ctx.fillStyle = '#38BDF8';
-            ctx.font = 'bold 26px "Plus Jakarta Sans", sans-serif';
-            ctx.fillText("🤖 Agente Bibliotecario:", 90, 385);
+            ctx.font = 'bold 22px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText("🤖 Agente Bibliotecario:", 65, 375);
             ctx.fillStyle = '#E2E8F0';
-            ctx.font = '24px "Plus Jakarta Sans", sans-serif';
-            ctx.fillText("Te recomiendo 'Cómo programar en C' (Deitel).", 90, 425);
-            ctx.fillText("En el Cap. 7 explica la memoria RAM gráficamente...", 90, 460);
+            ctx.font = '20px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText("Te recomiendo 'Cómo programar en C'", 65, 415);
+            ctx.fillText("de Deitel. Cap. 7 tiene diagramas de RAM.", 65, 450);
 
-            // Tarjeta de libro y lector
-            ctx.fillStyle = 'rgba(255,255,255,0.06)';
+            // Tarjeta de Vista Previa / Lector
+            ctx.fillStyle = 'rgba(0, 136, 255, 0.08)';
             ctx.strokeStyle = '#0088FF';
-            ctx.lineWidth = 4;
+            ctx.lineWidth = 3;
             ctx.beginPath();
-            ctx.roundRect(650, 340, 310, 280, 16);
+            ctx.roundRect(40, 510, 520, 220, 16);
             ctx.fill();
             ctx.stroke();
 
             ctx.fillStyle = '#F59E0B';
             ctx.font = 'bold 24px "Plus Jakarta Sans", sans-serif';
-            ctx.fillText("📖 LECTOR INCORPORADO", 680, 385);
-            ctx.fillStyle = '#94A3B8';
+            ctx.fillText("📖 LECTOR CANVAS INTEGRADO", 70, 555);
+            ctx.fillStyle = '#CBD5E1';
             ctx.font = '20px "Plus Jakarta Sans", sans-serif';
-            ctx.fillText("Vista previa de páginas oficiales", 680, 425);
-            ctx.fillText("Google Books API Reader", 680, 455);
+            ctx.fillText("• Lector oficial Google Books Embed", 70, 600);
+            ctx.fillText("• Vista previa de capítulos y páginas", 70, 640);
+            ctx.fillText("• Sinopsis y afinidad calculada", 70, 680);
+
+            // Barra de entrada flotante
+            ctx.fillStyle = '#0F172A';
+            ctx.strokeStyle = '#38BDF8';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.roundRect(40, 760, 520, 60, 30);
+            ctx.fill();
+            ctx.stroke();
+            ctx.fillStyle = '#64748B';
+            ctx.font = '19px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText("Escribe tu duda aquí...", 75, 797);
 
             return new THREE.CanvasTexture(canvas);
         }
 
-        // ── Textura para Capa 2: Agente Gemini 3.1 (Tool Calling) ──
-        function getTextureCapa2() {
-            const canvas = createTextTexture("CAPA 2: AGENTE AUTÓNOMO COGNITIVO", "Google Gemini 3.1 Flash Lite • Tool Calling RAG", "#A855F7");
+        // ── Textura Capa 2: Vertical Gemini 3.1 ──
+        function getTextureVerticalCapa2() {
+            const canvas = createVerticalTexture("CAPA 2", "AGENTE GEMINI 3.1", "Razonamiento & Tool Calling", "#A855F7");
             const ctx = canvas.getContext('2d');
 
-            // Tarjeta de prompt de sistema
+            // Tarjeta de Cerebro y Memoria
             ctx.fillStyle = '#1E1B4B';
             ctx.strokeStyle = '#A855F7';
-            ctx.lineWidth = 4;
+            ctx.lineWidth = 3;
             ctx.beginPath();
-            ctx.roundRect(60, 220, 420, 400, 16);
+            ctx.roundRect(40, 220, 520, 230, 16);
             ctx.fill();
             ctx.stroke();
 
             ctx.fillStyle = '#C084FC';
-            ctx.font = 'bold 28px "Plus Jakarta Sans", sans-serif';
-            ctx.fillText("🧠 SYSTEM PROMPT & MEMORIA", 90, 275);
-            ctx.fillStyle = '#CBD5E1';
-            ctx.font = '22px "JetBrains Mono", monospace';
-            ctx.fillText("• Rol: Tutor Universitario", 90, 330);
-            ctx.fillText("• Indagación: Pregunta nivel", 90, 375);
-            ctx.fillText("• Explicabilidad pedagógica", 90, 420);
-            ctx.fillText("• Memoria de chat Multi-turn", 90, 465);
+            ctx.font = 'bold 24px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText("🧠 PROMPT DE SISTEMA & MEMORIA", 65, 265);
+            ctx.fillStyle = '#E2E8F0';
+            ctx.font = '20px "JetBrains Mono", monospace';
+            ctx.fillText("• Rol: Tutor Universitario", 65, 315);
+            ctx.fillText("• Contexto: Memoria Multi-turn", 65, 355);
+            ctx.fillText("• Explicabilidad pedagógica (XAI)", 65, 395);
+            ctx.fillText("• Re-ranqueo y descarte de libros", 65, 435);
 
-            // Tool Calling
+            // Tarjeta de Tool Calling
             ctx.fillStyle = '#1E1B4B';
             ctx.strokeStyle = '#E879F9';
+            ctx.lineWidth = 3;
             ctx.beginPath();
-            ctx.roundRect(520, 220, 440, 400, 16);
+            ctx.roundRect(40, 480, 520, 340, 16);
             ctx.fill();
             ctx.stroke();
 
             ctx.fillStyle = '#E879F9';
-            ctx.font = 'bold 28px "Plus Jakarta Sans", sans-serif';
-            ctx.fillText("🛠️ FUNCTION / TOOL CALLING", 550, 275);
+            ctx.font = 'bold 24px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText("🛠️ FUNCTION / TOOL CALLING", 65, 525);
+
             ctx.fillStyle = '#34D399';
-            ctx.font = 'bold 24px "JetBrains Mono", monospace';
-            ctx.fillText("buscar_libros(", 550, 340);
+            ctx.font = 'bold 22px "JetBrains Mono", monospace';
+            ctx.fillText("buscar_libros(", 65, 580);
             ctx.fillStyle = '#CBD5E1';
-            ctx.font = '22px "JetBrains Mono", monospace';
-            ctx.fillText("  tema='pointers C memory',", 550, 385);
-            ctx.fillText("  materia='C y C++',", 550, 425);
-            ctx.fillText("  nivel='Basico'", 550, 465);
+            ctx.font = '20px "JetBrains Mono", monospace';
+            ctx.fillText("  tema='pointers C memory',", 85, 620);
+            ctx.fillText("  materia='C y C++',", 85, 660);
+            ctx.fillText("  nivel='Basico'", 85, 700);
             ctx.fillStyle = '#34D399';
-            ctx.font = 'bold 24px "JetBrains Mono", monospace';
-            ctx.fillText(")", 550, 505);
+            ctx.font = 'bold 22px "JetBrains Mono", monospace';
+            ctx.fillText(")", 65, 740);
+
+            ctx.fillStyle = '#A7F3D0';
+            ctx.font = '18px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText("➜ Ejecución determinística hacia Capa 3", 65, 790);
 
             return new THREE.CanvasTexture(canvas);
         }
 
-        // ── Textura para Capa 3: Motor TF-IDF + Coseno ──
-        function getTextureCapa3() {
-            const canvas = createTextTexture("CAPA 3: MOTOR ANALÍTICO MACHINE LEARNING", "Vector Space Model • TF-IDF (25.000 dims) • Coseno", "#10B981");
+        // ── Textura Capa 3: Vertical TF-IDF + Coseno ──
+        function getTextureVerticalCapa3() {
+            const canvas = createVerticalTexture("CAPA 3", "MOTOR MACHINE LEARNING", "Vector Space Model & Coseno", "#10B981");
             const ctx = canvas.getContext('2d');
 
-            // Fórmulas matemáticas
+            // Fórmulas Matemáticas
             ctx.fillStyle = '#064E3B';
             ctx.strokeStyle = '#10B981';
-            ctx.lineWidth = 4;
+            ctx.lineWidth = 3;
             ctx.beginPath();
-            ctx.roundRect(60, 220, 420, 400, 16);
+            ctx.roundRect(40, 220, 520, 240, 16);
             ctx.fill();
             ctx.stroke();
 
-            ctx.fillStyle = '#34D399';
-            ctx.font = 'bold 30px "JetBrains Mono", monospace';
-            ctx.fillText("TF-IDF = tf × log(N/df)", 90, 290);
-
-            ctx.font = 'bold 28px "JetBrains Mono", monospace';
             ctx.fillStyle = '#6EE7B7';
-            ctx.fillText("cos(θ) = (A · B) / (||A|| ||B||)", 90, 380);
+            ctx.font = 'bold 26px "JetBrains Mono", monospace';
+            ctx.fillText("TF-IDF = tf × log(N / df)", 65, 275);
+
+            ctx.fillStyle = '#A7F3D0';
+            ctx.font = 'bold 24px "JetBrains Mono", monospace';
+            ctx.fillText("cos(θ) = (q · d) / (||q|| ||d||)", 65, 345);
 
             ctx.fillStyle = '#CBD5E1';
-            ctx.font = '22px "Plus Jakarta Sans", sans-serif';
-            ctx.fillText("• Inferencia: ~15 milisegundos", 90, 450);
-            ctx.fillText("• Vocabulario: 25.000 n-gramas", 90, 495);
-            ctx.fillText("• Expansión de términos ES ⇄ EN", 90, 540);
+            ctx.font = '20px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText("• Inferencia: ~15 milisegundos", 65, 400);
+            ctx.fillText("• Vocabulario: 25.000 dimensiones", 65, 435);
 
-            // Representación de ranking
+            // Ranking de Resultados
             ctx.fillStyle = '#064E3B';
             ctx.strokeStyle = '#34D399';
+            ctx.lineWidth = 3;
             ctx.beginPath();
-            ctx.roundRect(520, 220, 440, 400, 16);
+            ctx.roundRect(40, 490, 520, 330, 16);
             ctx.fill();
             ctx.stroke();
 
             ctx.fillStyle = '#34D399';
-            ctx.font = 'bold 28px "Plus Jakarta Sans", sans-serif';
-            ctx.fillText("🎯 RANKING DE SIMILITUD", 550, 275);
+            ctx.font = 'bold 24px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText("🎯 RANKING DE SIMILITUD (TOP 3)", 65, 535);
 
             ctx.fillStyle = '#FDE68A';
-            ctx.font = 'bold 24px "JetBrains Mono", monospace';
-            ctx.fillText("1. Deitel C Pointers [34.6%]", 550, 340);
-            ctx.fillText("2. Kernighan Ritchie [28.2%]", 550, 410);
-            ctx.fillText("3. Kochan Prog in C  [22.8%]", 550, 480);
+            ctx.font = 'bold 20px "JetBrains Mono", monospace';
+            ctx.fillText("1. Deitel C Pointers [34.6%]", 65, 595);
+            ctx.fillText("2. Kernighan Ritchie [28.2%]", 65, 655);
+            ctx.fillText("3. Kochan Prog in C  [22.8%]", 65, 715);
+
+            ctx.fillStyle = '#A7F3D0';
+            ctx.font = '18px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText("➜ Retorno ponderado hacia Capa 2", 65, 785);
 
             return new THREE.CanvasTexture(canvas);
         }
 
-        // ── Textura para Capa 4: Catálogo de 2.521 Libros ──
-        function getTextureCapa4() {
-            const canvas = createTextTexture("CAPA 4: CATÁLOGO DE 2.521 LIBROS ACADÉMICOS", "Dataset Estructurado • 53 Áreas del Conocimiento • CSV", "#F59E0B");
+        // ── Textura Capa 4: Vertical Catálogo 2.521 Libros ──
+        function getTextureVerticalCapa4() {
+            const canvas = createVerticalTexture("CAPA 4", "CATÁLOGO 2.521 LIBROS", "Dataset Curado • 53 Materias", "#F59E0B");
             const ctx = canvas.getContext('2d');
 
             ctx.fillStyle = '#451A03';
             ctx.strokeStyle = '#F59E0B';
-            ctx.lineWidth = 4;
+            ctx.lineWidth = 3;
             ctx.beginPath();
-            ctx.roundRect(60, 220, 900, 400, 16);
+            ctx.roundRect(40, 220, 520, 600, 16);
             ctx.fill();
             ctx.stroke();
 
             ctx.fillStyle = '#FCD34D';
-            ctx.font = 'bold 36px "Plus Jakarta Sans", sans-serif';
-            ctx.fillText("📚 2.521 LIBROS REALES INDEXADOS", 100, 290);
+            ctx.font = 'bold 30px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText("📚 2.521 LIBROS INDEXADOS", 65, 280);
 
             ctx.fillStyle = '#CBD5E1';
-            ctx.font = '24px "Plus Jakarta Sans", sans-serif';
-            ctx.fillText("• 53 Materias: Programación, Cálculo, IA, Redes, Bases de Datos, Física...", 100, 360);
-            ctx.fillText("• 3 Niveles: Básico (1.384), Intermedio (245), Avanzado (892)", 100, 415);
-            ctx.fillText("• Metadatos: Título, Autores, Materia, Nivel, Sinopsis, Google Books ID", 100, 470);
-            ctx.fillText("• Fuente de Datos: Google Books API Oficial (Volúmenes Universitarios)", 100, 525);
+            ctx.font = '21px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText("• 53 Áreas del Conocimiento:", 65, 345);
+            ctx.fillStyle = '#FDE68A';
+            ctx.font = '19px "JetBrains Mono", monospace';
+            ctx.fillText("  Cálculo, C, Python, IA, Redes,", 65, 385);
+            ctx.fillText("  Bases de Datos, Física, Química...", 65, 420);
+
+            ctx.fillStyle = '#CBD5E1';
+            ctx.font = '21px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText("• Distribución por Niveles:", 65, 485);
+            ctx.font = '19px "JetBrains Mono", monospace';
+            ctx.fillText("  Básico:     1.384 libros", 65, 525);
+            ctx.fillText("  Intermedio:   245 libros", 65, 560);
+            ctx.fillText("  Avanzado:     892 libros", 65, 595);
+
+            ctx.fillStyle = '#CBD5E1';
+            ctx.font = '21px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText("• Metadatos Almacenados:", 65, 660);
+            ctx.font = '18px "JetBrains Mono", monospace';
+            ctx.fillText("  Título, Autores, Materia, Nivel,", 65, 700);
+            ctx.fillText("  Sinopsis, Portada, Google Books ID", 65, 735);
+
+            ctx.fillStyle = '#FCD34D';
+            ctx.font = '18px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText("➜ Fuente: Google Books API Oficial", 65, 790);
 
             return new THREE.CanvasTexture(canvas);
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        // CREACIÓN DE LAS 4 CAPAS 3D FLOTANTES (SLABS DE COLOR VIBRANTE)
+        // CREACIÓN DE LOS 4 PANELES VERTICALES ERGUIDOS (EN FILA HORIZONTAL)
         // ─────────────────────────────────────────────────────────────────────
-        const layersGroup = new THREE.Group();
-        scene.add(layersGroup);
+        const pipelineGroup = new THREE.Group();
+        scene.add(pipelineGroup);
 
         const layerMeshes = [];
-        const layerPositionsCollapsed = [8, 2.5, -3, -8.5];
-        const layerPositionsExploded  = [18, 6, -6, -18];
-        let isExploded = true;
         let selectedLayerIndex = 0;
 
-        const layerWidth = 28;
-        const layerDepth = 19;
-        const layerThickness = 1.2;
+        const panelWidth = 15;
+        const panelHeight = 22;
+        const panelDepth = 1.5;
 
-        const texturasCapas = [
-            getTextureCapa1(),
-            getTextureCapa2(),
-            getTextureCapa3(),
-            getTextureCapa4()
+        const texturasVerticales = [
+            getTextureVerticalCapa1(),
+            getTextureVerticalCapa2(),
+            getTextureVerticalCapa3(),
+            getTextureVerticalCapa4()
         ];
 
         LAYERS_DATA.forEach((data, index) => {
-            const slabGroup = new THREE.Group();
-            slabGroup.userData = { index: index, data: data };
+            const totemGroup = new THREE.Group();
+            totemGroup.userData = { index: index, data: data };
 
-            // Material para la cara superior con la textura visual del proyecto
-            const topMaterial = new THREE.MeshBasicMaterial({
-                map: texturasCapas[index],
+            // Material frontal con la textura del componente
+            const frontMaterial = new THREE.MeshBasicMaterial({
+                map: texturasVerticales[index],
                 transparent: true,
-                opacity: 0.96
+                opacity: 0.98
             });
 
-            // Material vibrante de color para los lados y base
+            // Material para bordes y espalda: Vidrio teñido neón brillante
             const sideMaterial = new THREE.MeshPhysicalMaterial({
                 color: data.colorHex,
                 emissive: data.colorHex,
-                emissiveIntensity: 0.35,
+                emissiveIntensity: 0.45,
                 transparent: true,
-                opacity: 0.82,
-                roughness: 0.25,
-                metalness: 0.2,
+                opacity: 0.85,
+                roughness: 0.2,
+                metalness: 0.3,
                 clearcoat: 0.9,
             });
 
-            // Array de materiales: [right, left, top, bottom, front, back]
+            // [right, left, top, bottom, front, back]
             const materials = [
                 sideMaterial,
                 sideMaterial,
-                topMaterial,
                 sideMaterial,
                 sideMaterial,
+                frontMaterial, // Cara delantera visible
                 sideMaterial
             ];
 
-            const geometry = new THREE.BoxGeometry(layerWidth, layerThickness, layerDepth);
+            const geometry = new THREE.BoxGeometry(panelWidth, panelHeight, panelDepth);
             const mesh = new THREE.Mesh(geometry, materials);
-            slabGroup.add(mesh);
+            totemGroup.add(mesh);
 
-            // Borde luminoso brillante
+            // Borde brillante de alambre
             const edges = new THREE.EdgesGeometry(geometry);
-            const lineMaterial = new THREE.LineBasicMaterial({
+            const lineMat = new THREE.LineBasicMaterial({
                 color: data.glowHex,
                 linewidth: 3,
                 transparent: true,
                 opacity: 0.95
             });
-            const wireframe = new THREE.LineSegments(edges, lineMaterial);
-            slabGroup.add(wireframe);
+            const wireframe = new THREE.LineSegments(edges, lineMat);
+            totemGroup.add(wireframe);
 
-            // Elementos 3D temáticos encima de cada capa:
+            // Pedestal base iluminado bajo cada panel vertical
+            const baseGeo = new THREE.CylinderGeometry(8.5, 9.5, 1.2, 32);
+            const baseMat = new THREE.MeshStandardMaterial({
+                color: 0x0F172A,
+                roughness: 0.4,
+                metalness: 0.6
+            });
+            const baseMesh = new THREE.Mesh(baseGeo, baseMat);
+            baseMesh.position.y = -panelHeight/2 - 0.6;
+            totemGroup.add(baseMesh);
+
+            const ringGeo = new THREE.RingGeometry(8.0, 8.8, 32);
+            const ringMat = new THREE.MeshBasicMaterial({
+                color: data.glowHex,
+                side: THREE.DoubleSide
+            });
+            const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+            ringMesh.rotation.x = Math.PI / 2;
+            ringMesh.position.y = -panelHeight/2;
+            totemGroup.add(ringMesh);
+
+            // Elementos 3D temáticos adjuntos a cada panel:
             if (index === 3) {
-                // CAPA 4: Mini-libros 3D reales alineados como una biblioteca
+                // CAPA 4: Racks de mini-libros 3D reales a los lados del panel
                 const booksGroup = new THREE.Group();
                 const bookColors = [0xEF4444, 0x3B82F6, 0x10B981, 0xF59E0B, 0x8B5CF6, 0xEC4899];
-                
-                for (let b = 0; b < 24; b++) {
-                    const bGeo = new THREE.BoxGeometry(0.5, 1.8, 1.2);
-                    const bMat = new THREE.MeshStandardMaterial({
-                        color: bookColors[b % bookColors.length],
-                        roughness: 0.3
-                    });
-                    const bMesh = new THREE.Mesh(bGeo, bMat);
-                    bMesh.position.set(-11 + b * 0.95, 1.5, 7.5);
-                    bMesh.rotation.y = (Math.random() - 0.5) * 0.15;
-                    booksGroup.add(bMesh);
+
+                for (let r = 0; r < 2; r++) { // 2 repisas
+                    for (let b = 0; b < 10; b++) {
+                        const bGeo = new THREE.BoxGeometry(0.45, 1.8, 1.2);
+                        const bMat = new THREE.MeshStandardMaterial({
+                            color: bookColors[b % bookColors.length],
+                            roughness: 0.3
+                        });
+                        const bMesh = new THREE.Mesh(bGeo, bMat);
+                        bMesh.position.set(-5 + b * 1.1, -panelHeight/2 + 2.5 + r * 2.4, panelDepth/2 + 1.2);
+                        bMesh.rotation.y = (Math.random() - 0.5) * 0.15;
+                        booksGroup.add(bMesh);
+                    }
                 }
-                slabGroup.add(booksGroup);
+                totemGroup.add(booksGroup);
             } else if (index === 2) {
-                // CAPA 3: Puntos de dispersión vectorial 3D (Vector Space Model)
+                // CAPA 3: Nube de dispersión vectorial 3D (Vector Space Model)
                 const vectorGroup = new THREE.Group();
-                const vGeo = new THREE.SphereGeometry(0.35, 16, 16);
+                const vGeo = new THREE.SphereGeometry(0.3, 16, 16);
                 const vMat = new THREE.MeshBasicMaterial({ color: 0x6EE7B7 });
 
-                for (let v = 0; v < 30; v++) {
+                for (let v = 0; v < 22; v++) {
                     const dot = new THREE.Mesh(vGeo, vMat);
-                    dot.position.set((Math.random() - 0.5) * 22, 1.2 + Math.random() * 1.5, (Math.random() - 0.5) * 14);
+                    dot.position.set(
+                        (Math.random() - 0.5) * (panelWidth - 3),
+                        (Math.random() - 0.5) * (panelHeight - 5),
+                        panelDepth/2 + 1.2 + Math.random() * 1.5
+                    );
                     vectorGroup.add(dot);
                 }
-                slabGroup.add(vectorGroup);
+                totemGroup.add(vectorGroup);
             } else if (index === 1) {
-                // CAPA 2: Nodos de red neuronal / Gemini Brain
+                // CAPA 2: Nodos de red neuronal / Gemini Brain flotando
                 const brainGroup = new THREE.Group();
-                const nGeo = new THREE.OctahedronGeometry(0.5);
-                const nMat = new THREE.MeshStandardMaterial({ color: 0xE879F9, emissive: 0xA855F7, emissiveIntensity: 0.6 });
+                const nGeo = new THREE.OctahedronGeometry(0.45);
+                const nMat = new THREE.MeshStandardMaterial({
+                    color: 0xE879F9,
+                    emissive: 0xA855F7,
+                    emissiveIntensity: 0.7
+                });
 
-                for (let n = 0; n < 16; n++) {
+                for (let n = 0; n < 12; n++) {
                     const node = new THREE.Mesh(nGeo, nMat);
-                    node.position.set(-9 + (n % 4) * 6, 1.4 + Math.sin(n) * 0.8, -6 + Math.floor(n / 4) * 4);
+                    node.position.set(
+                        -4.5 + (n % 3) * 4.5,
+                        -5 + Math.floor(n / 3) * 3.5,
+                        panelDepth/2 + 1.2
+                    );
                     brainGroup.add(node);
                 }
-                slabGroup.add(brainGroup);
+                totemGroup.add(brainGroup);
             }
 
-            // Posición vertical inicial (expandida)
-            slabGroup.position.y = layerPositionsExploded[index];
+            // Posición en fila horizontal (Eje X)
+            totemGroup.position.set(data.posX, 0, 0);
 
-            layersGroup.add(slabGroup);
-            layerMeshes.push(slabGroup);
+            pipelineGroup.add(totemGroup);
+            layerMeshes.push(totemGroup);
         });
 
-        // ── COLUMNAS DE INTERCONEXIÓN ENTRE CAPAS ──
-        const pillarMat = new THREE.LineDashedMaterial({
-            color: 0x64748B,
-            dashSize: 0.8,
-            gapSize: 0.4,
+        // ── RIELES HORIZONTALES DE CONEXIÓN ENTRE PANELES ──
+        const railMat = new THREE.LineDashedMaterial({
+            color: 0x38BDF8,
+            dashSize: 1.2,
+            gapSize: 0.6,
             transparent: true,
-            opacity: 0.5
+            opacity: 0.6
         });
-        const corners = [
-            [-layerWidth/2 + 1, -layerDepth/2 + 1],
-            [layerWidth/2 - 1, -layerDepth/2 + 1],
-            [-layerWidth/2 + 1, layerDepth/2 - 1],
-            [layerWidth/2 - 1, layerDepth/2 - 1]
-        ];
 
-        corners.forEach(([cx, cz]) => {
-            const pGeo = new THREE.BufferGeometry().setFromPoints([
-                new THREE.Vector3(cx, -22, cz),
-                new THREE.Vector3(cx, 22, cz)
+        [-5, 0, 5].forEach(yPos => {
+            const railGeo = new THREE.BufferGeometry().setFromPoints([
+                new THREE.Vector3(-38, yPos, 0),
+                new THREE.Vector3(38, yPos, 0)
             ]);
-            const pLine = new THREE.Line(pGeo, pillarMat);
-            pLine.computeLineDistances();
-            layersGroup.add(pLine);
+            const railLine = new THREE.Line(railGeo, railMat);
+            railLine.computeLineDistances();
+            pipelineGroup.add(railLine);
         });
 
+        // Flechas 3D conectoras entre paneles (➔)
+        function createArrow(fromX, toX, y) {
+            const arrowGroup = new THREE.Group();
+            const midX = (fromX + toX) / 2;
+
+            const coneGeo = new THREE.ConeGeometry(0.8, 2.0, 16);
+            const coneMat = new THREE.MeshBasicMaterial({ color: 0x60A5FA });
+            const cone = new THREE.Mesh(coneGeo, coneMat);
+            cone.rotation.z = -Math.PI / 2;
+            cone.position.set(midX, y, panelDepth/2 + 0.5);
+
+            arrowGroup.add(cone);
+            return arrowGroup;
+        }
+
+        pipelineGroup.add(createArrow(-28.5, -9.5, 0));
+        pipelineGroup.add(createArrow(-9.5, 9.5, 0));
+        pipelineGroup.add(createArrow(9.5, 28.5, 0));
+
         // ─────────────────────────────────────────────────────────────────────
-        // SIMULACIÓN DE FLUJO DE PARTÍCULAS
+        // SIMULACIÓN DE FLUJO HORIZONTAL DE PARTÍCULAS
         // ─────────────────────────────────────────────────────────────────────
-        const particleCount = 80;
+        const particleCount = 70;
         const particleGeo = new THREE.BufferGeometry();
         const particlePos = new Float32Array(particleCount * 3);
         const particleSpeeds = new Float32Array(particleCount);
 
         for (let i = 0; i < particleCount; i++) {
-            particlePos[i * 3]     = (Math.random() - 0.5) * (layerWidth - 4);
-            particlePos[i * 3 + 1] = 18;
-            particlePos[i * 3 + 2] = (Math.random() - 0.5) * (layerDepth - 4);
-            particleSpeeds[i]      = 0.22 + Math.random() * 0.3;
+            particlePos[i * 3]     = -28.5; // Inicia en Capa 1
+            particlePos[i * 3 + 1] = (Math.random() - 0.5) * 10;
+            particlePos[i * 3 + 2] = panelDepth/2 + 0.8 + Math.random() * 0.5;
+            particleSpeeds[i]      = 0.35 + Math.random() * 0.45;
         }
 
         particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePos, 3));
@@ -920,11 +1028,11 @@
             blending: THREE.AdditiveBlending
         });
         const particleSystem = new THREE.Points(particleGeo, particleMat);
-        layersGroup.add(particleSystem);
+        pipelineGroup.add(particleSystem);
 
         let isSimulating = false;
 
-        function simularFlujo() {
+        function simularFlujoHorizontal() {
             if (isSimulating) return;
             isSimulating = true;
 
@@ -935,29 +1043,30 @@
             particleMat.opacity = 1.0;
 
             const stages = [
-                { text: "Paso 1: Estudiante escribe 'Punteros en C' en la Capa 1 (Interfaz Streamlit)", targetLayer: 0 },
-                { text: "Paso 2: Capa 2 (Gemini 3.1) razona la necesidad y ejecuta la Tool 'buscar_libros()'", targetLayer: 1 },
-                { text: "Paso 3: Capa 3 (TF-IDF + Coseno) vectoriza términos y busca similitud angular", targetLayer: 2 },
-                { text: "Paso 4: Capa 4 (Catálogo) consulta los 2.521 libros indexados y rankea los mejores", targetLayer: 3 },
-                { text: "Paso 5: Capa 2 (Gemini) redacta la justificación pedagógica y analogía del puntero", targetLayer: 1 },
-                { text: "Paso 6: Capa 1 proyecta la respuesta + tarjeta interactiva con Google Books", targetLayer: 0 }
+                { text: "1. Consulta iniciada en Capa 1 (Streamlit): Estudiante escribe 'Punteros en C'", targetLayer: 0 },
+                { text: "2. Flujo viaja a Capa 2 (Gemini 3.1): Razona e invoca autónomamente 'buscar_libros()'", targetLayer: 1 },
+                { text: "3. Flujo viaja a Capa 3 (TF-IDF): Vectoriza términos y computa el Coseno angular", targetLayer: 2 },
+                { text: "4. Flujo consulta Capa 4 (Catálogo): Accede a los 2.521 libros de la base de datos", targetLayer: 3 },
+                { text: "5. Retorno a Capa 2: Gemini recibe los libros y redacta la justificación pedagógica", targetLayer: 1 },
+                { text: "6. Retorno a Capa 1: Proyección en la interfaz web con tarjeta y lector Google Books", targetLayer: 0 }
             ];
 
             let stageIdx = 0;
 
             function runStage() {
                 if (stageIdx >= stages.length) {
-                    simText.innerText = "¡Consulta completada con éxito en 18 milisegundos!";
+                    simText.innerText = "¡Consulta procesada a través del pipeline horizontal en 18 milisegundos!";
                     setTimeout(() => {
                         banner.style.display = 'none';
                         particleMat.opacity = 0.0;
                         isSimulating = false;
-                    }, 2500);
+                        vistaPanoramica();
+                    }, 2800);
                     return;
                 }
 
                 simText.innerText = stages[stageIdx].text;
-                seleccionarCapa(stages[stageIdx].targetLayer);
+                enfocarCapa(stages[stageIdx].targetLayer);
                 stageIdx++;
                 setTimeout(runStage, 2400);
             }
@@ -966,24 +1075,21 @@
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        // INTERACCIÓN Y NAVEGACIÓN ENTRE CAPAS
+        // CONTROL DE CÁMARA Y NAVEGACIÓN
         // ─────────────────────────────────────────────────────────────────────
-        function toggleExplode() {
-            isExploded = !isExploded;
-            const positions = isExploded ? layerPositionsExploded : layerPositionsCollapsed;
+        function vistaPanoramica() {
+            new TWEEN.Tween(camera.position)
+                .to({ x: 0, y: 14, z: 68 }, 1100)
+                .easing(TWEEN.Easing.Cubic.Out)
+                .start();
 
-            layerMeshes.forEach((mesh, idx) => {
-                new TWEEN.Tween(mesh.position)
-                    .to({ y: positions[idx] }, 950)
-                    .easing(TWEEN.Easing.Cubic.Out)
-                    .start();
-            });
-
-            document.getElementById('explode-text').innerText = isExploded ? "Colapsar Capas (Vista Compacta)" : "Separar Capas (3D Explode)";
-            document.getElementById('explode-icon').innerText = isExploded ? "⤡" : "⤢";
+            new TWEEN.Tween(controls.target)
+                .to({ x: 0, y: 0, z: 0 }, 1100)
+                .easing(TWEEN.Easing.Cubic.Out)
+                .start();
         }
 
-        function seleccionarCapa(index) {
+        function enfocarCapa(index) {
             selectedLayerIndex = index;
             const data = LAYERS_DATA[index];
 
@@ -991,18 +1097,19 @@
                 document.getElementById(`nav-btn-${i}`).classList.toggle('active', i === index);
             }
 
-            layerMeshes.forEach((meshGroup, idx) => {
-                const wireframe = meshGroup.children[1];
-
+            // Resaltado visual del panel vertical
+            layerMeshes.forEach((totemGroup, idx) => {
+                const wireframe = totemGroup.children[1];
                 if (idx === index) {
                     wireframe.material.opacity = 1.0;
-                    meshGroup.scale.set(1.05, 1.15, 1.05);
+                    totemGroup.scale.set(1.06, 1.06, 1.06);
                 } else {
                     wireframe.material.opacity = 0.45;
-                    meshGroup.scale.set(1.0, 1.0, 1.0);
+                    totemGroup.scale.set(1.0, 1.0, 1.0);
                 }
             });
 
+            // Actualizar inspector lateral
             const badge = document.getElementById('insp-badge');
             const title = document.getElementById('insp-title');
             const desc = document.getElementById('insp-desc');
@@ -1024,14 +1131,19 @@
                 <span class="tech-pill">${t}</span>
             `).join('');
 
-            const targetY = isExploded ? layerPositionsExploded[index] : layerPositionsCollapsed[index];
+            // Deslizar suavemente la cámara para pararse frente al panel seleccionado
+            new TWEEN.Tween(camera.position)
+                .to({ x: data.posX, y: 3, z: 36 }, 850)
+                .easing(TWEEN.Easing.Cubic.Out)
+                .start();
+
             new TWEEN.Tween(controls.target)
-                .to({ y: targetY }, 600)
+                .to({ x: data.posX, y: 0, z: 0 }, 850)
                 .easing(TWEEN.Easing.Cubic.Out)
                 .start();
         }
 
-        // Raycaster para clics sobre los bloques 3D
+        // Raycaster para clics sobre los paneles 3D
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
 
@@ -1042,15 +1154,15 @@
             mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
             raycaster.setFromCamera(mouse, camera);
-            const intersects = raycaster.intersectObjects(layersGroup.children, true);
+            const intersects = raycaster.intersectObjects(pipelineGroup.children, true);
 
             if (intersects.length > 0) {
                 let current = intersects[0].object;
-                while (current.parent && current.parent !== layersGroup) {
+                while (current.parent && current.parent !== pipelineGroup) {
                     current = current.parent;
                 }
                 if (current.userData && current.userData.index !== undefined) {
-                    seleccionarCapa(current.userData.index);
+                    enfocarCapa(current.userData.index);
                 }
             }
         });
@@ -1062,7 +1174,7 @@
         });
 
         // ─────────────────────────────────────────────────────────────────────
-        // LOOP DE RENDERIZADO
+        // BUCLE DE ANIMACIÓN PRINCIPAL
         // ─────────────────────────────────────────────────────────────────────
         let clock = new THREE.Clock();
 
@@ -1072,21 +1184,21 @@
 
             const time = clock.getElapsedTime();
 
-            // Rotación suave del grupo completo
-            layersGroup.rotation.y = Math.sin(time * 0.15) * 0.08;
+            // Rotación sutil y flotación del grupo completo
+            pipelineGroup.rotation.y = Math.sin(time * 0.15) * 0.04;
 
-            // Flotación sutil de cada capa
+            // Flotación suave de cada panel
             layerMeshes.forEach((mesh, i) => {
-                mesh.position.x = Math.sin(time * 0.8 + i) * 0.12;
+                mesh.position.y = Math.sin(time * 1.2 + i * 1.5) * 0.25;
             });
 
             // Animación de partículas si la simulación está activa
             if (isSimulating) {
                 const positions = particleGeo.attributes.position.array;
                 for (let i = 0; i < particleCount; i++) {
-                    positions[i * 3 + 1] -= particleSpeeds[i];
-                    if (positions[i * 3 + 1] < -18) {
-                        positions[i * 3 + 1] = 18;
+                    positions[i * 3] += particleSpeeds[i];
+                    if (positions[i * 3] > 32) {
+                        positions[i * 3] = -32;
                     }
                 }
                 particleGeo.attributes.position.needsUpdate = true;
@@ -1097,7 +1209,7 @@
         }
 
         animate();
-        seleccionarCapa(0);
+        vistaPanoramica();
     </script>
 </body>
 </html>
